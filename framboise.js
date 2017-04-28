@@ -78,11 +78,20 @@ function editSettings() {
 	$("#rssUrl").val(rssUrl);
 	var panelClass = localStorage.getItem('panelClass');
 	$("#panelClass").val(panelClass);
+	$('input[type=radio]').each(function() {
+		for (var i = 0, len = localStorage.length; i < len; i++) {
+			var key = localStorage.key(i);
+			var value = localStorage[key];
+			if (key == "inlineRadio1" || key == "inlineRadio2" || key == "inlineRadio3" ) {
+				$('#' + key).attr("checked", "checked");
+			}
+		}
+	});
 	$('input:checkbox').each(function() {
 		for (var i = 0, len = localStorage.length; i < len; i++) {
 			var key = localStorage.key(i);
 			var value = localStorage[key];
-			if (value) {
+			if (value == 1) {
 				$('#' + key).attr("checked", "checked");
 			}
 		}
@@ -91,26 +100,58 @@ function editSettings() {
 }
 
 function saveSettings() {
-	var icsUrl = $("#icsUrl").val();
-	localStorage.setItem('icsUrl', icsUrl)
+	var jsonvar = "";
 	var domoticzUrl = $("#domoticzUrl").val();
-	localStorage.setItem('domoticzUrl', domoticzUrl)
+	//localStorage.setItem('domoticzUrl', domoticzUrl)
+	jsonvar = saveSettingVar('domoticzUrl', domoticzUrl, jsonvar)
+	var icsUrl = $("#icsUrl").val();
+	//localStorage.setItem('icsUrl', icsUrl)
+	jsonvar = saveSettingVar('icsUrl', icsUrl, jsonvar)
 	var rssUrl = $("#rssUrl").val();
-	localStorage.setItem('rssUrl', rssUrl)
+	//localStorage.setItem('rssUrl', rssUrl)
+	jsonvar = saveSettingVar('rssUrl', rssUrl, jsonvar)
 	var panelClass = $("#panelClass").val();
-	localStorage.setItem('panelClass', panelClass)
+	//localStorage.setItem('panelClass', panelClass)
+	jsonvar = saveSettingVar('panelClass', panelClass, jsonvar)
+	$('input[type=radio]').each(function() {
+		var RadioId = $(this).attr('id');
+		if ($(this).is(":checked")) {
+			//localStorage.setItem(checkboxId, 1);
+			jsonvar = saveSettingVar("SaveDomoticz", $(this).val(), jsonvar)
+			jsonvar = saveSettingVar(RadioId, $(this).val(), jsonvar)
+			console.log("Radio=" + $(this).val() + $(this).is(":checked"))
+		}
+		else {
+			localStorage.removeItem(RadioId);
+		}
+	});
 	$('input:checkbox').each(function() {
 		var checkboxId = $(this).attr('id');
 		if ($(this).is(":checked")) {
 			value = $(this).val();
 			localStorage.setItem(checkboxId, value);
+			jsonvar = saveSettingVar(checkboxId, value, jsonvar)
 		} else {
 			localStorage.removeItem(checkboxId);
 		}
 	});
+	// {"domoticzUrl":"http://192.168.0.30:8080""icsUrl":"""rssUrl":"""panelClass":"panel-primary""SaveDomoticz":"0"}
+	if ( localStorage.SaveDomoticz >= 2 ) {
+		var url = localStorage.domoticzUrl + '/json.htm?type=command&param=updateuservariable&vname=framb0ise&vtype=2&vvalue={' + jsonvar + '}';
+		console.log("Update Domoticz uservariable framb0ise:" + url)
+		$.getJSON(url, function(data) {
+
+		});
+	}
 	location.reload();
 }
-
+function saveSettingVar(name,val,jsoninp) {
+	localStorage.setItem(name, val)
+	if ( jsoninp != "" ) {
+		jsoninp = jsoninp + ',';
+	}
+	return jsoninp + '"' + name + '":"' + val + '"'
+}
 function updateTraffic() {
 	var widget;
 	var url = 'https://crossorigin.me/https://www.anwb.nl/feeds/gethf';
@@ -303,6 +344,11 @@ function switchLight(idx, action) {
 }
 
 function checkWidgets() {
+	//http://192.168.0.30:8080/jos/undefined/json.htm?type=devices&filter=all&used=true&order=Name&lastupdate=0
+	if (typeof(localStorage.domoticzUrl) == "undefined") {
+		console.log( "!!! reset domoticzUrl")
+		localStorage.domoticzUrl = "";
+	}
 	var url = localStorage.domoticzUrl + "/json.htm?type=devices&filter=all&used=true&order=Name&lastupdate=" + LastUpdateTime;
 	$.getJSON(url, function(data) {
 		if (data.result) {
@@ -684,10 +730,62 @@ function styleWidget(device) {
 		break;
 	}
 }
+
+function loadsettingsfromdomoticz(level) {
+	var url = '/json.htm?type=command&param=getuservariables';
+	var found = 0;
+	$.getJSON(url, function(data) {
+		data.result.forEach(function(uservar) {
+			//console.log("uservar.Name = " + uservar.Name);
+			if ( uservar.Name == "framb0ise" ) {
+				console.log("Found " + uservar.Name + "=" + uservar.idx);
+				var url = '/json.htm?type=command&param=getuservariable&idx=' + uservar.idx ;
+				console.log(url);
+				found = 1;
+				$.getJSON(url, function(settings) {
+					var changes = 0;
+					settings.result.forEach(function(info) {
+						console.log(info["Value"]) ;
+						var fields = JSON.parse(info["Value"]);
+						if ( fields["SaveDomoticz"] >= level ) {
+							console.log(" force check of changes ..") ;
+							for(field in fields){
+								if ( localStorage.getItem(field) != fields[field] ) {
+									localStorage.setItem(field, fields[field]) ;
+									changes = 1;
+									console.log("changed -> field: " + field + "   Value: " + fields[field]);
+								}
+							}
+						}
+					if ( changes == 1 ) {
+						console.log(" Changes found ... reload website") ;
+						location.reload();
+					}
+				});
+			});
+			}
+		});
+		if ( found == 0 ) {
+			console.log("Domoticz uservariable framb0ise not found .. making uservar in domoticz")
+			var url = localStorage.domoticzUrl + '/json.htm?type=command&param=saveuservariable&vname=framb0ise&vtype=2&vvalue={"domoticzUrl":"' + $(location).attr('protocol') + "//" + $(location).attr('host') + '"}';
+			$.getJSON(url, function(data) {
+			});
+		}
+	});
+}
+
 $(document).ready(function() {
-	if (!localStorage.domoticzUrl) {
+	// load settings from domoticsz uservariable
+	if (!localStorage.domoticzUrl || localStorage.domoticzUrl == 'undefined') {
+		console.log("No localstorage yet.");
+		localStorage.SaveDomoticz = 0;
 		localStorage.domoticzUrl = $(location).attr('protocol') + "//" + $(location).attr('host');
+		loadsettingsfromdomoticz(1)
 	}
+	else {
+		loadsettingsfromdomoticz(3)
+	}
+
 	readHardware();
 	createRooms();
 	readCams();
