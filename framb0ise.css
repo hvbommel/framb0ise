@@ -1,0 +1,67 @@
+.progress {
+	margin-bottom:0!important;
+}
+
+.warning {
+	color:orange;
+}
+
+.success {
+	color:green;
+}
+
+.danger {
+	color:red;
+}
+
+.primary {
+	color:blue;
+}
+
+.vcenter {
+	margin:0!important;
+	width:100%;
+	height:100%;
+}
+
+.panel {
+	margin-top:10px!important;
+	opacity:.8;
+}
+
+td {
+	padding:2px!important;
+}
+
+.data {
+	width: 50%;
+}
+
+.time {
+	text-align:center;
+}
+
+.device {
+	width 50%;
+}
+
+.navbar {
+	margin-top:0!important;
+	margin-bottom:0!important;
+}
+
+.slider.slider-horizontal {
+	width:50%!important;
+}
+
+.pagination {
+	text-align:center;
+}
+
+body {
+	background:url(img/bg.jpg) no-repeat center center fixed;
+	-webkit-background-size:cover;
+	-moz-background-size:cover;
+	-o-background-size:cover;
+	background-size:cover;
+}

@@ -1,0 +1,14 @@
+{
+  "name": "paginathing",
+  "homepage": "https://github.com/alfrcr/paginathing",
+  "_release": "ff2328db94",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "ff2328db941ba9058572550f3228d60bee05207a"
+  },
+  "_source": "https://github.com/alfrcr/paginathing.git",
+  "_target": "*",
+  "_originalSource": "alfrcr/paginathing",
+  "_direct": true
+}

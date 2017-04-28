@@ -1,0 +1,14 @@
+{
+  "name": "JavaScript-Ical-Parser",
+  "homepage": "https://github.com/thybag/JavaScript-Ical-Parser",
+  "_release": "e7c58ef45a",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "e7c58ef45abd76621232386d11b34f19df6887d7"
+  },
+  "_source": "https://github.com/thybag/JavaScript-Ical-Parser.git",
+  "_target": "*",
+  "_originalSource": "thybag/JavaScript-Ical-Parser",
+  "_direct": true
+}

@@ -1,0 +1,15 @@
+{
+  "name": "jquery-rss",
+  "homepage": "https://github.com/sdepold/jquery-rss",
+  "version": "3.3.0",
+  "_release": "3.3.0",
+  "_resolution": {
+    "type": "version",
+    "tag": "v3.3.0",
+    "commit": "8f4f9381212d8319552022eee5b2975e13524303"
+  },
+  "_source": "https://github.com/sdepold/jquery-rss.git",
+  "_target": "^3.3.0",
+  "_originalSource": "sdepold/jquery-rss",
+  "_direct": true
+}
