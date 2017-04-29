@@ -32,7 +32,7 @@ function updateRss() {
 
 function updateCalendar() {
 	$("#room-calendar").empty();
-	var icsUrl = '' + localStorage.getItem('icsUrl');
+	var icsUrl = 'https://crossorigin.me/' + localStorage.getItem('icsUrl');
 	new ical_parser(icsUrl, function(cal) {
 		var events = cal.getFutureEvents();
 		var counter = 0;
@@ -153,7 +153,7 @@ function saveSettingVar(name, val, jsoninp) {
 
 function updateTraffic() {
 	var widget;
-	var url = 'https://www.anwb.nl/feeds/gethf';
+	var url = 'https://cors.5apps.com/?uri=https://www.anwb.nl/feeds/gethf';
 	$.getJSON(url, function(data) {
 		data.roadEntries.forEach(function(road) {
 			if (road.events.trafficJams.length != 0) {
@@ -311,9 +311,22 @@ function updateDarkSky() {
 			$("#td-darksky-precipprobability").html(precipProbability + ' %');
 			var temperature = data.currently.temperature;
 			temperature = parseFloat(temperature);
-			temperature = temperature.toFixed(1); //data-container="body" data-toggle="popover" data-placement="bottom" data-content="Click here to refresh the page."
-			var weatherReport = '<small>today: ' + data.daily.data[0].summary;
-			weatherReport += '<br>tommorow: ' + data.daily.data[1].summary;
+			temperature = temperature.toFixed(1);
+
+			var weatherReport='';
+			data.daily.data.forEach(function(report){
+
+			var weekDays = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+
+			var date = new Date(report.time*1000);
+
+			weatherReport +='<small>' +weekDays[date.getDay()]+': '+data.daily.data[date.getDay()].summary+'</small><br>';
+
+
+			})
+
+
+
 			$("#title-weather").html('<b><i class="fa fa-thermometer-half fa-lg" aria-hidden="true"></i> ' + temperature + ' &deg;c</b>').attr('data-container', 'body').attr('data-placement', 'right').attr('data-content', weatherReport).attr('data-toggle', 'popover').attr('data-html', 'true');
 			$('[data-toggle="popover"]').popover({
 				trigger: "hover"
