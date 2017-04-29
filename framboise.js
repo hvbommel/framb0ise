@@ -493,7 +493,16 @@ function createRooms() {
 		data.result.forEach(function(room) {
 			// framb0ise specific rooms  Need to add the rest of the widgets stuff inside this if
 			if (room.Name.substring(0, 4) == "$fr-" ) {
-				console.log("name: " + room.Name + " Order:" + room.Order + " idx:" + room.idx)
+				var fixroom = room.Name.substring(4);
+				console.log("fixroom:" + fixroom + "name: " + room.Name + " Order:" + room.Order + " idx:" + room.idx)
+				switch (fixroom) {
+				case "Test Room":
+					console.log ("logic for test room")
+					break;
+				case "Test Room2":
+					console.log ("logic for test room2")
+					break;
+				}
 			}
 			// for the others show only none hidden rooms
 			if (room.Name.substring(0, 1) != "$" ) {
@@ -795,20 +804,19 @@ function loadsettingsfromdomoticz() {
 
 function domoticsAddRoom(newroom) {
 	var url = localStorage.domoticzUrl + "/json.htm?type=plans&displayhidden=1";
-	var alreadyexists = 0;
+	var alreadyexists = false;
 	$.getJSON(url, function(data) {
 		data.result.forEach(function(room) {
 			if (room.Name.substring(0, 4) == "$fr-" ) {
 				console.log("name: " + room.Name + " check met" + "$fr-" + newroom)
 				if ( room.Name == "$fr-" + newroom ) {
-					alreadyexists = 1;
+					alreadyexists = true;
 					console.log("name: " + room.Name + " bestaat al!" )
 				}
 			}
 			// Add rooms
-			//http://192.168.0.31:8080/json.htm?type=command&param=addplan&name=fr-test
 			});
-			if ( alreadyexists == 0 ) {
+			if ( !alreadyexists ) {
 				var url = localStorage.domoticzUrl + "/json.htm?type=command&param=addplan&name=" + '$fr-' + newroom;
 				console.log(url)
 				$.getJSON(url, function(data) {
@@ -822,8 +830,8 @@ $(document).ready(function() {
 		loadsettingsfromdomoticz(1)
 	}
 	// testing checking adding rooms
-	//domoticsAddRoom("Test Room")
-	//domoticsAddRoom("Test Room2")
+	domoticsAddRoom("Test Room")
+	domoticsAddRoom("Test Room2")
 	readHardware();
 	createRooms();
 	readCams();
