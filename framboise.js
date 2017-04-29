@@ -20,9 +20,9 @@ function updateCams() {
 }
 
 function updateRss() {
-	$("#room-news").empty();
+	$("#room-rss").empty();
 	var rssUrl = localStorage.getItem('rssUrl');
-	$("#room-news").rss(rssUrl, {
+	$("#room-rss").rss(rssUrl, {
 		ssl: true,
 		limit: 5,
 		layoutTemplate: '{entries}',
@@ -30,8 +30,8 @@ function updateRss() {
 	});
 }
 
-function updateCalendar() {
-	$("#room-calendar").empty();
+function updateIcs() {
+	$("#room-ics").empty();
 	var icsUrl = 'https://crossorigin.me/' + localStorage.getItem('icsUrl');
 	new ical_parser(icsUrl, function(cal) {
 		var events = cal.getFutureEvents();
@@ -42,7 +42,7 @@ function updateCalendar() {
 				date = date.replace(/\//g, "-")
 				var time = event.start_time;
 				var widget = '<tr><td class="device">' + date + ' ' + time + '</td><td class="data">' + event.SUMMARY + '</td></tr>'
-				$("#room-calendar").append(widget);
+				$("#room-ics").append(widget);
 			}
 			counter++;
 		});
@@ -142,7 +142,7 @@ function saveSettingVar(name, val, jsoninp) {
 	return jsoninp + '"' + name + '":"' + val + '"'
 }
 
-function updateTraffic() {
+function updateANWB() {
 	var widget;
 	var url = 'https://cors.5apps.com/?uri=https://www.anwb.nl/feeds/gethf';
 	$.getJSON(url, function(data) {
@@ -153,9 +153,9 @@ function updateTraffic() {
 				});
 			}
 		});
-		$("#room-traffic").empty().append(widget);
+		$("#room-anwb").empty().append(widget);
 		$(".pagination-container").empty();
-		$('#room-traffic').paginathing({
+		$('#room-anwb').paginathing({
 			perPage: 5,
 			prevNext: true,
 			firstLast: true,
@@ -172,7 +172,7 @@ function updateTraffic() {
 	});
 }
 
-function updateWeathermap() {
+function updateBuienradar() {
 	var rainArray = [];
 	var url = localStorage.domoticzUrl + '/json.htm?type=settings';
 	$.getJSON(url, function(data) {
@@ -187,15 +187,15 @@ function updateWeathermap() {
 				}
 			})
 			if (rainArray.length > 1) {
-				$("#title-weathermap").html('<b><i class="fa fa-umbrella fa-lg" aria-hidden="true"></i> rain from ' + rainArray[0] + ' to ' + rainArray[rainArray.length - 1]).css('color', 'orange');
+				$("#title-buienradar").html('<b><i class="fa fa-umbrella fa-lg" aria-hidden="true"></i> rain from ' + rainArray[0] + ' to ' + rainArray[rainArray.length - 1]).css('color', 'orange');
 			} else {
-				$("#title-weathermap").html('<b><i class="fa fa-umbrella fa-lg" aria-hidden="true"></i>');
+				$("#title-buienradar").html('<b><i class="fa fa-umbrella fa-lg" aria-hidden="true"></i>');
 			}
 		});
 	})
-	$("#room-weathermap").empty();
+	$("#room-buienrader").empty();
 	var widget = '<tr><td colspan="2"><img src="https://api.buienradar.nl/image/1.0/RadarMapNL?w=256&h=256" width=100%></td></tr>';
-	$("#room-weathermap").append(widget);
+	$("#room-buienrader").append(widget);
 }
 
 function setDimmer(idx, value) {
@@ -313,7 +313,7 @@ function updateDarkSky() {
 				weatherReport += '<tr><small><td>' + weekday + '</td><td>' + temperatureMin + '&deg;c - ' + temperatureMax + '&deg;c</td></small></tr>';
 			})
 			weatherReport += '</table>';
-			$("#title-weather").html('<b><i class="fa fa-thermometer-half fa-lg" aria-hidden="true"></i> ' + temperature + ' &deg;c</b>').attr('data-container', 'body').attr('data-placement', 'right').attr('data-content', weatherReport).attr('data-toggle', 'popover').attr('data-html', 'true');
+			$("#title-darksky").html('<b><i class="fa fa-thermometer-half fa-lg" aria-hidden="true"></i> ' + temperature + ' &deg;c</b>').attr('data-container', 'body').attr('data-placement', 'right').attr('data-content', weatherReport).attr('data-toggle', 'popover').attr('data-html', 'true');
 			$('[data-toggle="popover"]').popover({
 				trigger: "hover"
 			});
@@ -432,23 +432,23 @@ function createRooms() {
 			})
 		})
 	})
-	if (localStorage.calendarWidget == 1) {
-		roomWidget = '<div class="panel ' + panelClass + '"><div class="panel-heading" id="title-calendar"><i class="fa fa-calendar fa-lg" aria-hidden="true"></i></div><table class="table" id="room-calendar"></table></div>';
+	if (localStorage.icsWidget == 1) {
+		roomWidget = '<div class="panel ' + panelClass + '"><div class="panel-heading" id="title-ics"><i class="fa fa-calendar fa-lg" aria-hidden="true"></i></div><table class="table" id="room-ics"></table></div>';
 		$("#col-" + col).append(roomWidget);
 		col++;
 		if (col == 4) {
 			col = 1;
 		}
-		updateCalendar();
-		setInterval(updateCalendar, 60 * 60 * 1000);
+		updateIcs();
+		setInterval(updateIcs, 60 * 60 * 1000);
 	}
-	if (localStorage.weatherWidget == 1) {
-		roomWidget = '<div class="panel ' + panelClass + '"><div id="title-weather" class="panel-heading"></div><table class="table" id="room-weather"></table></div>';
+	if (localStorage.darkskyWidget == 1) {
+		roomWidget = '<div class="panel ' + panelClass + '"><div id="title-darksky" class="panel-heading"></div><table class="table" id="room-darksky"></table></div>';
 		$("#col-" + col).append(roomWidget);
 		widget = '<tr><td class="data" id="td-darksky-icon" colspan="2" align="center"></td></tr>';
 		widget = widget + '<tr><td class="device" id="td-darksky-preciptype"></td><td class="data" id="td-darksky-precipprobability"></td></tr>';
 		widget = widget + '<tr><td class="device"><i class="fa fa-flag fa-lg" aria-hidden="true"></i></td><td class="data" id="td-darksky-wind"></td></tr>';
-		$("#room-weather").append(widget);
+		$("#room-darksky").append(widget);
 		col++;
 		if (col == 4) {
 			col = 1;
@@ -456,11 +456,11 @@ function createRooms() {
 		updateDarkSky();
 		setInterval(updateDarkSky, 300000);
 	}
-	if (localStorage.newsWidget == 1) {
+	if (localStorage.anwbWidget == 1) {
 		if (!localStorage.rssUrl) {
 			localStorage.rssUrl = 'http://www.nu.nl/rss/Algemeen';
 		}
-		roomWidget = '<div class="panel ' + panelClass + '"><div class="panel-heading" id="title-news"><i class="fa fa-newspaper-o fa-lg" aria-hidden="true"></i></div><table class="table" id="room-news"></table></div>';
+		roomWidget = '<div class="panel ' + panelClass + '"><div class="panel-heading" id="title-rss"><i class="fa fa-newspaper-o fa-lg" aria-hidden="true"></i></div><table class="table" id="room-rss"></table></div>';
 		$("#col-" + col).append(roomWidget);
 		col++;
 		if (col == 4) {
@@ -469,27 +469,27 @@ function createRooms() {
 		updateRss();
 		setInterval(updateRss, 300000);
 	}
-	if (localStorage.weathermapWidget == 1) {
-		roomWidget = '<div class="panel ' + panelClass + '"><div id="title-weathermap" class="panel-heading"></b></div><table class="table" id="room-weathermap"></table></div>';
+	if (localStorage.buienradarWidget == 1) {
+		roomWidget = '<div class="panel ' + panelClass + '"><div id="title-buienradar" class="panel-heading"></b></div><table class="table" id="room-buienrader"></table></div>';
 		$("#col-" + col).append(roomWidget);
 		col++;
 		if (col == 4) {
 			col = 1;
 		}
-		updateWeathermap();
-		setInterval(updateWeathermap, 1800000);
+		updateBuienradar();
+		setInterval(updateBuienradar, 1800000);
 	}
-	if (localStorage.trafficWidget == 1) {
-		roomWidget = '<div class="panel ' + panelClass + '"><div class="panel-heading"><b><i class="fa fa-car fa-lg" aria-hidden="true"></i></b></div><table class="table" id="room-traffic"></table></div>';
+	if (localStorage.anwbWidget == 1) {
+		roomWidget = '<div class="panel ' + panelClass + '"><div class="panel-heading"><b><i class="fa fa-car fa-lg" aria-hidden="true"></i></b></div><table class="table" id="room-anwb"></table></div>';
 		$("#col-" + col).append(roomWidget);
 		widget = '<tr><td class="device"></td><td class="data" id="td-trafficjams"></td></tr></table>';
-		$("#room-traffic").append(widget);
+		$("#room-anwb").append(widget);
 		col++;
 		if (col == 4) {
 			col = 1;
 		}
-		updateTraffic();
-		setInterval(updateTraffic, 300000);
+		updateANWB();
+		setInterval(updateANWB, 300000);
 	}
 	var url = localStorage.domoticzUrl + "/json.htm?type=plans&order=name&used=true";
 	$.getJSON(url, function(data) {
