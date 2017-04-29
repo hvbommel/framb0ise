@@ -29,7 +29,6 @@
         <div class="col-md-4" id="col-2"></div>
         <div class="col-md-4" id="col-3"></div>
     </div>
-
  <script src="bower_components/jquery/dist/jquery.min.js"></script>
  <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
  <script src="bower_components/skycons/skycons.js"></script>
@@ -50,67 +49,78 @@
                 </div>
 
                 <div class="modal-body">
-                        <div class="form-group">
-                            <label for="domoticzUrl">domoticz server</label><input type="text" class="form-control" id="domoticzUrl" placeholder="e.g. http://x.x.x.x:8080 or https://user:pass@x.x.x.x">
-                        </div>
 
-                        <div class="form-group">
-	                        <label for="">Panel Color</label>
-	                        	<select id="panelClass" class="form-control">
-		                        	<option value="panel-default">Grey</option>
-									<option value="panel-primary">Dark Blue</option>
-									<option value="panel-success">Green</option>
-									<option value="panel-info">Light Blue</option>
-									<option value="panel-warning">Orange</option>
-									<option value="panel-danger">Red</option>
+					<div class="radio">
+					 Import previously saved settings from domoticz. <button type="button" class="btn btn-primary glyphicon glyphicon-import" onclick="loadsettingsfromdomoticz()" data-dismiss="modal"></button>
+					</div>
+					<div class="form-group">
+						<label for="domoticzUrl">domoticz server</label><input type="text" class="form-control" id="domoticzUrl" placeholder="e.g. http://x.x.x.x:8080 or https://user:pass@x.x.x.x">					</div>
 
-	                        	</select>
-                        </div>
+					<div class="form-group">
+						<label for="">Panel Color</label>
+							<select id="panelClass" class="form-control">
+								<option value="panel-default">Grey</option>
+								<option value="panel-primary">Dark Blue</option>
+								<option value="panel-success">Green</option>
+								<option value="panel-info">Light Blue</option>
+								<option value="panel-warning">Orange</option>
+								<option value="panel-danger">Red</option>
 
-                        <div class="checkbox">
-                            <label><input type="checkbox" id="infoWidget" value="1">Info Widget</label>
-                        </div>
+							</select>
+					</div>
 
-                        <div class="checkbox">
-                            <label><input type="checkbox" id="weatherWidget" value="1">Weather Widget (uses DarkSky settings from domoticz!)</label>
-                        </div>
+					<div class="checkbox">
+						<label><input type="checkbox" id="infoWidget" value="1">Info Widget</label>
+					</div>
 
-                        <div class="checkbox">
-                            <label><input type="checkbox" id="weathermapWidget" value="1">Weathermap Widget (buienradar.nl)</label>
-                        </div>
+					<div class="checkbox">
+						<label><input type="checkbox" id="weatherWidget" value="1">Weather Widget (uses DarkSky settings from domoticz!)</label>
+					</div>
 
-                        <div class="checkbox">
-                            <label><input type="checkbox" id="trafficWidget" value="1">Traffic Widget (anwb.nl)</label>
-                        </div>
-                        <div class="checkbox">
-                            <label><input type="checkbox" id="newsWidget" value="1">RSS Widget</label>
-                        </div>
+					<div class="checkbox">
+						<label><input type="checkbox" id="weathermapWidget" value="1">Weathermap Widget (buienradar.nl)</label>
+					</div>
 
-                        <div class="form-group">
-	                        <label for="rssUrl">RSS Url</label>
-	                    <input type="text" class="form-control" id="rssUrl" placeholder="e.g. http://www.nu.nl/rss/Algemeen"/>
+					<div class="checkbox">
+						<label><input type="checkbox" id="trafficWidget" value="1">Traffic Widget (anwb.nl)</label>
+					</div>
+					<div class="checkbox">
+						<label><input type="checkbox" id="newsWidget" value="1">RSS Widget</label>
+					</div>
 
-                        </div>
+					<div class="form-group">
+						<label for="rssUrl">RSS Url</label>
+					<input type="text" class="form-control" id="rssUrl" placeholder="e.g. http://www.nu.nl/rss/Algemeen"/>
 
-                        <div class="checkbox">
-                            <label><input type="checkbox" id="calendarWidget" value="1">Public Calendar Widget (ics)</label>
-                        </div>
-                        <div class="form-group">
-	                        <label for="rssUrl">ICS Url (gmail calender has to be 'shared')</label>
-	                    <input type="text" class="form-control" id="icsUrl" placeholder="e.g. https://calendar.google.com/calendar/ical/myaccount@gmail.com/public/basic.ics"/>
-                        </div>
-                        <div class="form-group">
-	                        <label for="domoCams">Webcams</label>
-	                        <div id="domoCams"></div>
-	                        </div>
+					</div>
 
+					<div class="checkbox">
+						<label><input type="checkbox" id="calendarWidget" value="1">Public Calendar Widget (ics)</label>
+					</div>
+					<div class="form-group">
+						<label for="rssUrl">ICS Url (gmail calender has to be 'shared')</label>
+					<input type="text" class="form-control" id="icsUrl" placeholder="e.g. https://calendar.google.com/calendar/ical/myaccount@gmail.com/public/basic.ics"/>
+					</div>
+					<div class="form-group">
+						<label for="domoCams">Webcams</label>
+						<div id="domoCams"></div>
+					</div>
 
-
-
-
-                </div>
-
-                <div class="modal-footer">
+				<div class="form-group">
+					<label for="settingsTitle">Settings storage location:</label>
+				<div class="radio" id="settingsTitle">
+					<label class="radio-inline">
+						<input type="radio" name="inlineRadioOptions" id="inlineRadio1" value="1">Local (this browser only).
+					</label>
+					</div>
+					<div class="radio">
+					<label class="radio-inline">
+						<input type="radio" name="inlineRadioOptions" id="inlineRadio2" value="2">Domoticz (for all devices).
+					</label>
+					</div>
+				</div>
+				</div>
+				<div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> <button type="button" class="btn btn-primary" onclick="saveSettings()">Save changes</button>
                 </div>
             </div>

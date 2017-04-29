@@ -78,11 +78,20 @@ function editSettings() {
 	$("#rssUrl").val(rssUrl);
 	var panelClass = localStorage.getItem('panelClass');
 	$("#panelClass").val(panelClass);
+	$('input[type=radio]').each(function() {
+		for (var i = 0, len = localStorage.length; i < len; i++) {
+			var key = localStorage.key(i);
+			var value = localStorage[key];
+			if (key == "inlineRadio1" || key == "inlineRadio2" || key == "inlineRadio3") {
+				$('#' + key).attr("checked", "checked");
+			}
+		}
+	});
 	$('input:checkbox').each(function() {
 		for (var i = 0, len = localStorage.length; i < len; i++) {
 			var key = localStorage.key(i);
 			var value = localStorage[key];
-			if (value) {
+			if (value == 1) {
 				$('#' + key).attr("checked", "checked");
 			}
 		}
@@ -91,29 +100,51 @@ function editSettings() {
 }
 
 function saveSettings() {
-	var icsUrl = $("#icsUrl").val();
-	localStorage.setItem('icsUrl', icsUrl)
+	var jsonvar = "";
 	var domoticzUrl = $("#domoticzUrl").val();
-	localStorage.setItem('domoticzUrl', domoticzUrl)
+	jsonvar = saveSettingVar('domoticzUrl', domoticzUrl, jsonvar)
+	var icsUrl = $("#icsUrl").val();
+	jsonvar = saveSettingVar('icsUrl', icsUrl, jsonvar)
 	var rssUrl = $("#rssUrl").val();
-	localStorage.setItem('rssUrl', rssUrl)
+	jsonvar = saveSettingVar('rssUrl', rssUrl, jsonvar)
 	var panelClass = $("#panelClass").val();
-	localStorage.setItem('panelClass', panelClass)
+	jsonvar = saveSettingVar('panelClass', panelClass, jsonvar)
+	$('input[type=radio]').each(function() {
+		var RadioId = $(this).attr('id');
+		if ($(this).is(":checked")) {
+			localStorage.setItem(RadioId, 1);
+		} else {
+			localStorage.removeItem(RadioId);
+		}
+	});
 	$('input:checkbox').each(function() {
 		var checkboxId = $(this).attr('id');
 		if ($(this).is(":checked")) {
 			value = $(this).val();
 			localStorage.setItem(checkboxId, value);
+			jsonvar = saveSettingVar(checkboxId, value, jsonvar)
 		} else {
 			localStorage.removeItem(checkboxId);
 		}
 	});
+	if (localStorage.inlineRadio2 == 1) {
+		var url = localStorage.domoticzUrl + '/json.htm?type=command&param=updateuservariable&vname=framb0ise&vtype=2&vvalue={' + jsonvar + '}';
+		$.getJSON(url, function(data) {});
+	}
 	location.reload();
+}
+
+function saveSettingVar(name, val, jsoninp) {
+	localStorage.setItem(name, val)
+	if (jsoninp != "") {
+		jsoninp = jsoninp + ',';
+	}
+	return jsoninp + '"' + name + '":"' + val + '"'
 }
 
 function updateTraffic() {
 	var widget;
-	var url = 'https://crossorigin.me/https://www.anwb.nl/feeds/gethf';
+	var url = 'https://cors.5apps.com/?uri=https://www.anwb.nl/feeds/gethf';
 	$.getJSON(url, function(data) {
 		data.roadEntries.forEach(function(road) {
 			if (road.events.trafficJams.length != 0) {
@@ -142,6 +173,26 @@ function updateTraffic() {
 }
 
 function updateWeathermap() {
+	var rainArray = [];
+	var url = localStorage.domoticzUrl + '/json.htm?type=settings';
+	$.getJSON(url, function(data) {
+		var latitude = data.Location.Latitude;
+		var longitude = data.Location.Longitude;
+		var url = 'https://crossorigin.me/https://gpsgadget.buienradar.nl/data/raintext?lat=' + latitude + '&lon=' + longitude;
+		$.get(url, function(data) {
+			var rainData = data.split("\n");
+			rainData.forEach(function(data) {
+				if (data.substring(0, 3) != "000") {
+					rainArray.push(data.substring(4, 9))
+				}
+			})
+			if (rainArray.length > 1) {
+				$("#title-weathermap").html('<b><i class="fa fa-umbrella fa-lg" aria-hidden="true"></i> rain from ' + rainArray[0] + ' to ' + rainArray[rainArray.length - 1]).css('color', 'orange');
+			} else {
+				$("#title-weathermap").html('<b><i class="fa fa-umbrella fa-lg" aria-hidden="true"></i>');
+			}
+		});
+	})
 	$("#room-weathermap").empty();
 	var widget = '<tr><td colspan="2"><img src="https://api.buienradar.nl/image/1.0/RadarMapNL?w=256&h=256" width=100%></td></tr>';
 	$("#room-weathermap").append(widget);
@@ -149,12 +200,12 @@ function updateWeathermap() {
 
 function setDimmer(idx, value) {
 	var url = localStorage.domoticzUrl + '/json.htm?type=command&param=switchlight&idx=' + idx + '&switchcmd=Set%20Level&level=' + value;
-	$.getJSON(url, function(data) {
+	$.get(url, function(data) {
 		checkWidgets();
 	});
 }
 
-function readSettings() {
+function readSettings(settings) {
 	var url = localStorage.domoticzUrl + '/json.htm?type=settings';
 	$.getJSON(url, function(data) {});
 }
@@ -201,8 +252,8 @@ function readHardware() {
 }
 
 function updateDarkSky() {
-	url = 'https://crossorigin.me/https://api.darksky.net/forecast/' + localStorage.DarkSkyUsername + '/' + localStorage.DarkSkyPassword + '?units=ca';
-	$.getJSON(url, function(data) {
+	url = 'https://cors.5apps.com/?uri=https://api.darksky.net/forecast/' + localStorage.DarkSkyUsername + '/' + localStorage.DarkSkyPassword + '?units=ca';
+	$.get(url, function(data) {
 		if (data.currently) {
 			var skycons = new Skycons({
 				"color": "black"
@@ -252,7 +303,20 @@ function updateDarkSky() {
 			var temperature = data.currently.temperature;
 			temperature = parseFloat(temperature);
 			temperature = temperature.toFixed(1);
-			$("#title-weather").html('<b><i class="fa fa-thermometer-half fa-lg" aria-hidden="true"></i> ' + temperature + ' &deg;c</b>');
+			var weatherReport = '<table>';
+			data.daily.data.forEach(function(report) {
+				var weekDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+				var date = new Date(report.time * 1000);
+				var weekday = weekDays[date.getDay()];
+				var temperatureMin = data.daily.data[date.getDay()].temperatureMin;
+				var temperatureMax = data.daily.data[date.getDay()].temperatureMax;
+				weatherReport += '<tr><small><td>' + weekday + '</td><td>' + temperatureMin + '&deg;c - ' + temperatureMax + '&deg;c</td></small></tr>';
+			})
+			weatherReport += '</table>';
+			$("#title-weather").html('<b><i class="fa fa-thermometer-half fa-lg" aria-hidden="true"></i> ' + temperature + ' &deg;c</b>').attr('data-container', 'body').attr('data-placement', 'right').attr('data-content', weatherReport).attr('data-toggle', 'popover').attr('data-html', 'true');
+			$('[data-toggle="popover"]').popover({
+				trigger: "hover"
+			});
 			$("#td-darksky-wind").html(data.currently.windSpeed + ' km/h');
 			skycons.play();
 		}
@@ -303,6 +367,10 @@ function switchLight(idx, action) {
 }
 
 function checkWidgets() {
+	//http://192.168.0.30:8080/jos/undefined/json.htm?type=devices&filter=all&used=true&order=Name&lastupdate=0
+	if (typeof(localStorage.domoticzUrl) == "undefined") {
+		localStorage.domoticzUrl = "";
+	}
 	var url = localStorage.domoticzUrl + "/json.htm?type=devices&filter=all&used=true&order=Name&lastupdate=" + LastUpdateTime;
 	$.getJSON(url, function(data) {
 		if (data.result) {
@@ -321,7 +389,6 @@ function updateWidget(device) {
 }
 
 function createRooms() {
-	$('[data-toggle="popover"]').popover({ trigger: "hover" });
 	var col = 1;
 	var roomWidget;
 	var widget;
@@ -403,7 +470,7 @@ function createRooms() {
 		setInterval(updateRss, 300000);
 	}
 	if (localStorage.weathermapWidget == 1) {
-		roomWidget = '<div class="panel ' + panelClass + '"><div class="panel-heading"><b><i class="fa fa-umbrella fa-lg" aria-hidden="true"></i></b></div><table class="table" id="room-weathermap"></table></div>';
+		roomWidget = '<div class="panel ' + panelClass + '"><div id="title-weathermap" class="panel-heading"></b></div><table class="table" id="room-weathermap"></table></div>';
 		$("#col-" + col).append(roomWidget);
 		col++;
 		if (col == 4) {
@@ -449,7 +516,10 @@ function createRooms() {
 			});
 		});
 	});
-	setInterval(fullPagerefresh, 60 * 60 * 1000)
+	setInterval(fullPagerefresh, 60 * 60 * 1000);
+	$('[data-toggle="popover"]').popover({
+		trigger: "hover"
+	});
 }
 
 function createWidget(device) {
@@ -463,10 +533,10 @@ function createWidget(device) {
 		$("#room-" + device.PlanID).append(widget);
 		styleWidget(device);
 	} else {
-		if (device.CounterToday){
-			var data=device.CounterToday +' ('+device.Data+')';
+		if (device.CounterToday) {
+			var data = device.CounterToday + ' (' + device.Data + ')';
 		} else {
-			var data=device.Data;
+			var data = device.Data;
 		}
 		widget = '<tr><td class="device">' + device.Name + '</td><td class="data" id="td-' + device.PlanID + "-" + device.idx + '">' + data + '</td></tr>';
 		$("#room-" + device.PlanID).append(widget);
@@ -533,7 +603,7 @@ function styleWidget(device) {
 			setDimmer(device.idx, slideEvt.value);
 		});
 		break;
-	case "Venetian Blinds EU","Blinds" :
+	case "Venetian Blinds EU", "Blinds":
 		if (device.Data == 'Open') {
 			switchClass = 'btn btn-success btn-primary glyphicon glyphicon-off active';
 		} else {
@@ -541,7 +611,7 @@ function styleWidget(device) {
 		}
 		$('#td-' + device.PlanID + "-" + device.idx).html('<button type="button" class="' + switchClass + '" Onclick="switchLight(' + device.idx + ')"></button>');
 		break;
-	case "Venetian Blinds EU Inverted","Blinds Inverted" :
+	case "Venetian Blinds EU Inverted", "Blinds Inverted":
 		if (device.Data == 'Open') {
 			switchClass = 'btn btn-primary glyphicon glyphicon-off active';
 		} else {
@@ -549,7 +619,7 @@ function styleWidget(device) {
 		}
 		$('#td-' + device.PlanID + "-" + device.idx).html('<button type="button" class="' + switchClass + '" Onclick="switchLight(' + device.idx + ')"></button>');
 		break;
-	case "Venetian Blinds EU Percentage","Blinds Percentage":
+	case "Venetian Blinds EU Percentage", "Blinds Percentage":
 		if (device.Data == 'Open') {
 			switchClass = 'btn btn-success btn-primary glyphicon glyphicon-off active';
 		} else {
@@ -561,7 +631,7 @@ function styleWidget(device) {
 			setDimmer(device.idx, slideEvt.value);
 		});
 		break;
-	case "Venetian Blinds EU Percentage Inverted","Blinds Percentage Inverted":
+	case "Venetian Blinds EU Percentage Inverted", "Blinds Percentage Inverted":
 		if (device.Data == 'Open') {
 			switchClass = 'btn btn-primary glyphicon glyphicon-off active';
 		} else {
@@ -684,9 +754,43 @@ function styleWidget(device) {
 		break;
 	}
 }
+
+function loadsettingsfromdomoticz() {
+	var url = '/json.htm?type=command&param=getuservariables';
+	var found = 0;
+	localStorage.clear();
+	$.getJSON(url, function(data) {
+		data.result.forEach(function(uservar) {
+			if (uservar.Name == "framb0ise") {
+				var url = '/json.htm?type=command&param=getuservariable&idx=' + uservar.idx;
+				found = 1;
+				$.getJSON(url, function(settings) {
+					var changes = 0;
+					settings.result.forEach(function(info) {
+						var fields = JSON.parse(info["Value"]);
+						for (field in fields) {
+							if (localStorage.getItem(field) != fields[field]) {
+								localStorage.setItem(field, fields[field]);
+								changes = 1;
+							}
+						}
+						if (changes == 1) {
+							location.reload();
+						}
+					});
+				});
+			}
+		});
+		if (found == 0) {
+			var url = localStorage.domoticzUrl + '/json.htm?type=command&param=saveuservariable&vname=framb0ise&vtype=2&vvalue={"domoticzUrl":"' + $(location).attr('protocol') + "//" + $(location).attr('host') + '"}';
+			$.getJSON(url, function(data) {});
+		}
+	});
+}
 $(document).ready(function() {
-	if (!localStorage.domoticzUrl) {
+	if (!localStorage.domoticzUrl || localStorage.domoticzUrl == 'undefined') {
 		localStorage.domoticzUrl = $(location).attr('protocol') + "//" + $(location).attr('host');
+		loadsettingsfromdomoticz(1)
 	}
 	readHardware();
 	createRooms();
