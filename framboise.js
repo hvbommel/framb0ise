@@ -313,17 +313,23 @@ function updateDarkSky() {
 			temperature = parseFloat(temperature);
 			temperature = temperature.toFixed(1);
 
-			var weatherReport='';
+			var weatherReport='<table>';
+			console.log(data);
 			data.daily.data.forEach(function(report){
 
 			var weekDays = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 
 			var date = new Date(report.time*1000);
+			var weekday = weekDays[date.getDay()];
+			var temperatureMin = data.daily.data[date.getDay()].temperatureMin;
+			var temperatureMax = data.daily.data[date.getDay()].temperatureMax;
 
-			weatherReport +='<small>' +weekDays[date.getDay()]+': '+data.daily.data[date.getDay()].summary+'</small><br>';
+			weatherReport +='<tr><small><td>' + weekday + '</td><td>'+ temperatureMin +'&deg;c - '+ temperatureMax +'&deg;c</td></small></tr>';
 
 
 			})
+
+			weatherReport += '</table>';
 
 
 
