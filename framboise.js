@@ -461,28 +461,35 @@ function createRooms() {
 					}
 					break;
 				case "cameraWidget":
-					console.log ("logic for CameraWidget")
-					var url = localStorage.domoticzUrl + '/json.htm?type=cameras';
-					$.getJSON(url, function(data) {
-						data.result.forEach(function(cam) {
-							$.each(localStorage, function(key, value) {
-								if (~key.indexOf("cam")) {
-									if (value == cam.idx) {
-										roomWidget = '<div class="panel ' + panelClass + '"><div class="panel-heading" id="title-' + value + '"><i class="fa fa-camera fa-lg" aria-hidden="true"></i><b> ' + cam.Name + '</b></div><table class="table" id="cameraroom-' + value + '"></table></div>';
+
+				//create first
+				$.each(localStorage,function(key,value){
+					if (~key.indexOf("cam")) {
+						roomWidget = '<div class="panel ' + panelClass + '"><div class="panel-heading" id="title-' + value + '"><i class="fa fa-camera fa-lg" aria-hidden="true"></i><b></b></div><table class="table" id="cameraroom-' + value + '"></table></div>';
 										$("#col-" + col).append(roomWidget);
-										widget = '<tr><td  colspan="2"><img id="snapshot-' + cam.idx + '" width="100%"></img></td></tr>';
+										widget = '<tr><td  colspan="2"><img id="snapshot-' + value + '" width="100%"></img></td></tr>';
 										$("#cameraroom-" + value).append(widget);
 										col++;
 										if (col == 4) {
 											col = 1;
 										}
-										updateCams();
-										setInterval(updateCams, 10000);
-									}
-								}
-							})
+
+						}
+				})
+				//add stuff later
+				var url = localStorage.domoticzUrl + '/json.htm?type=cameras';
+					$.getJSON(url, function(data) {
+						data.result.forEach(function(cam) {
+
+							$("#title-"+cam.idx).text(cam.Name)
+
 						})
 					})
+
+				//start your engines
+				updateCams();
+				setInterval(updateCams, 10000);
+
 					break;
 				case "infoWidget":
 					console.log ("logic for infoWidget")
