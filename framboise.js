@@ -132,7 +132,7 @@ function saveSettings() {
 			localStorage.removeItem(checkboxId);
 		}
 	});
-	if ( localStorage.inlineRadio2 == 1 ) {
+	if (localStorage.inlineRadio2 == 1) {
 		var url = localStorage.domoticzUrl + '/json.htm?type=command&param=updateuservariable&vname=framb0ise&vtype=2&vvalue={' + jsonvar + '}';
 		console.log("Update Domoticz uservariable framb0ise:" + url)
 		$.getJSON(url, function(data) {});
@@ -309,27 +309,16 @@ function updateDarkSky() {
 			var temperature = data.currently.temperature;
 			temperature = parseFloat(temperature);
 			temperature = temperature.toFixed(1);
-
-			var weatherReport='<table>';
-			console.log(data);
-			data.daily.data.forEach(function(report){
-
-			var weekDays = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-
-			var date = new Date(report.time*1000);
-			var weekday = weekDays[date.getDay()];
-			var temperatureMin = data.daily.data[date.getDay()].temperatureMin;
-			var temperatureMax = data.daily.data[date.getDay()].temperatureMax;
-
-			weatherReport +='<tr><small><td>' + weekday + '</td><td>'+ temperatureMin +'&deg;c - '+ temperatureMax +'&deg;c</td></small></tr>';
-
-
+			var weatherReport = '<table>';
+			data.daily.data.forEach(function(report) {
+				var weekDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+				var date = new Date(report.time * 1000);
+				var weekday = weekDays[date.getDay()];
+				var temperatureMin = data.daily.data[date.getDay()].temperatureMin;
+				var temperatureMax = data.daily.data[date.getDay()].temperatureMax;
+				weatherReport += '<tr><small><td>' + weekday + '</td><td>' + temperatureMin + '&deg;c - ' + temperatureMax + '&deg;c</td></small></tr>';
 			})
-
 			weatherReport += '</table>';
-
-
-
 			$("#title-weather").html('<b><i class="fa fa-thermometer-half fa-lg" aria-hidden="true"></i> ' + temperature + ' &deg;c</b>').attr('data-container', 'body').attr('data-placement', 'right').attr('data-content', weatherReport).attr('data-toggle', 'popover').attr('data-html', 'true');
 			$('[data-toggle="popover"]').popover({
 				trigger: "hover"
@@ -772,6 +761,7 @@ function styleWidget(device) {
 		break;
 	}
 }
+
 function loadsettingsfromdomoticz() {
 	var url = '/json.htm?type=command&param=getuservariables';
 	var found = 0;
@@ -789,10 +779,10 @@ function loadsettingsfromdomoticz() {
 					settings.result.forEach(function(info) {
 						console.log(info["Value"]);
 						var fields = JSON.parse(info["Value"]);
-						console.log(" force check of changes ..") ;
-						for(field in fields){
-							if ( localStorage.getItem(field) != fields[field] ) {
-								localStorage.setItem(field, fields[field]) ;
+						console.log(" force check of changes ..");
+						for (field in fields) {
+							if (localStorage.getItem(field) != fields[field]) {
+								localStorage.setItem(field, fields[field]);
 								changes = 1;
 								console.log("changed -> field: " + field + "   Value: " + fields[field]);
 							}
