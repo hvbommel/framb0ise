@@ -491,7 +491,7 @@ function createRooms() {
 	var url = localStorage.domoticzUrl + "/json.htm?type=plans&displayhidden=1";
 	$.getJSON(url, function(data) {
 		data.result.forEach(function(room) {
-			// framb0ise specifix rooms
+			// framb0ise specific rooms  Need to add the rest of the widgets stuff inside this if
 			if (room.Name.substring(0, 4) == "$fr-" ) {
 				console.log("name: " + room.Name + " Order:" + room.Order + " idx:" + room.idx)
 			}
@@ -821,8 +821,9 @@ $(document).ready(function() {
 	if (!localStorage.domoticzUrl || localStorage.domoticzUrl == 'undefined') {
 		loadsettingsfromdomoticz(1)
 	}
-	domoticsAddRoom("Test Room")
-	domoticsAddRoom("Test Room2")
+	// testing checking adding rooms
+	//domoticsAddRoom("Test Room")
+	//domoticsAddRoom("Test Room2")
 	readHardware();
 	createRooms();
 	readCams();
