@@ -60,9 +60,7 @@
 					</label>
 					</div>
 					<div class="radio">
-					<label class="radio-inline">
-						<input type="radio" name="inlineRadioOptions" id="inlineRadio3" value="3">Save changes to Domoticz and force them to all devices/browsers
-					</label><button type="button" class="btn btn-primary" onclick="jouwFunctie()">knopje</button>
+					<button type="button" class="btn btn-primary" onclick="loadsettingsfromdomoticz()" data-dismiss="modal">Refresh settings from Domoticz</button>
 					</div>
 					<div class="form-group">
 						<label for="domoticzUrl">domoticz server</label><input type="text" class="form-control" id="domoticzUrl" placeholder="e.g. http://x.x.x.x:8080 or https://user:pass@x.x.x.x"><button type="button" class="btn btn-primary" onclick="saveSettings()">
