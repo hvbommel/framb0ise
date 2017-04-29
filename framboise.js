@@ -367,10 +367,6 @@ function switchLight(idx, action) {
 }
 
 function checkWidgets() {
-	//http://192.168.0.30:8080/jos/undefined/json.htm?type=devices&filter=all&used=true&order=Name&lastupdate=0
-	if (typeof(localStorage.domoticzUrl) == "undefined") {
-		localStorage.domoticzUrl = "";
-	}
 	var url = localStorage.domoticzUrl + "/json.htm?type=devices&filter=all&used=true&order=Name&lastupdate=" + LastUpdateTime;
 	$.getJSON(url, function(data) {
 		if (data.result) {
@@ -756,13 +752,14 @@ function styleWidget(device) {
 }
 
 function loadsettingsfromdomoticz() {
-	var url = '/json.htm?type=command&param=getuservariables';
-	var found = 0;
 	localStorage.clear();
+	localStorage.domoticzUrl = $(location).attr('protocol') + "//" + $(location).attr('host');
+	var url = localStorage.domoticzUrl + '/json.htm?type=command&param=getuservariables';
+	var found = 0;
 	$.getJSON(url, function(data) {
 		data.result.forEach(function(uservar) {
 			if (uservar.Name == "framb0ise") {
-				var url = '/json.htm?type=command&param=getuservariable&idx=' + uservar.idx;
+				var url = localStorage.domoticzUrl + '/json.htm?type=command&param=getuservariable&idx=' + uservar.idx;
 				found = 1;
 				$.getJSON(url, function(settings) {
 					var changes = 0;
@@ -789,7 +786,6 @@ function loadsettingsfromdomoticz() {
 }
 $(document).ready(function() {
 	if (!localStorage.domoticzUrl || localStorage.domoticzUrl == 'undefined') {
-		localStorage.domoticzUrl = $(location).attr('protocol') + "//" + $(location).attr('host');
 		loadsettingsfromdomoticz(1)
 	}
 	readHardware();
