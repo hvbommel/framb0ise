@@ -487,29 +487,37 @@ function createRooms() {
 		updateANWB();
 		setInterval(updateANWB, 300000);
 	}
-	var url = localStorage.domoticzUrl + "/json.htm?type=plans&order=name&used=true";
+
+	var url = localStorage.domoticzUrl + "/json.htm?type=plans&displayhidden=1";
 	$.getJSON(url, function(data) {
 		data.result.forEach(function(room) {
-			roomWidget = '<div class="panel panel ' + panelClass + '"><div class="panel-heading"><b>' + room.Name + '</b></div><table class="table" id="room-' + room.idx + '"></table></div>';
-			$("#col-" + col).append(roomWidget);
-			col++;
-			if (col == 4) {
-				col = 1;
+			// framb0ise specifix rooms
+			if (room.Name.substring(0, 4) == "$fr-" ) {
+				console.log("name: " + room.Name + " Order:" + room.Order + " idx:" + room.idx)
 			}
-			var url1 = localStorage.domoticzUrl + '/json.htm?type=command&param=getplandevices&idx=' + room.idx;
-			var url2 = localStorage.domoticzUrl + '/json.htm?type=devices&filter=all&used=true&order=Name&plan=' + room.idx;
-			var data2
-			$.getJSON(url2, function(data2) {
-				$.getJSON(url1, function(data1) {
-					data1.result.forEach(function(device1) {
-						data2.result.forEach(function(device2) {
-							if (device1.Name == device2.Name || device1.Name == "[Scene] " + device2.Name) {
-								createWidget(device2);
-							}
+			// for the others show only none hidden rooms
+			if (room.Name.substring(0, 1) != "$" ) {
+				roomWidget = '<div class="panel panel ' + panelClass + '"><div class="panel-heading"><b>' + room.Name + '</b></div><table class="table" id="room-' + room.idx + '"></table></div>';
+				$("#col-" + col).append(roomWidget);
+				col++;
+				if (col == 4) {
+					col = 1;
+				}
+				var url1 = localStorage.domoticzUrl + '/json.htm?type=command&param=getplandevices&idx=' + room.idx;
+				var url2 = localStorage.domoticzUrl + '/json.htm?type=devices&filter=all&used=true&order=Name&plan=' + room.idx;
+				var data2
+				$.getJSON(url2, function(data2) {
+					$.getJSON(url1, function(data1) {
+						data1.result.forEach(function(device1) {
+							data2.result.forEach(function(device2) {
+								if (device1.Name == device2.Name || device1.Name == "[Scene] " + device2.Name) {
+									createWidget(device2);
+								}
+							});
 						});
 					});
 				});
-			});
+			}
 		});
 	});
 	setInterval(fullPagerefresh, 60 * 60 * 1000);
@@ -784,10 +792,37 @@ function loadsettingsfromdomoticz() {
 		}
 	});
 }
+
+function domoticsAddRoom(newroom) {
+	var url = localStorage.domoticzUrl + "/json.htm?type=plans&displayhidden=1";
+	var alreadyexists = 0;
+	$.getJSON(url, function(data) {
+		data.result.forEach(function(room) {
+			if (room.Name.substring(0, 4) == "$fr-" ) {
+				console.log("name: " + room.Name + " check met" + "$fr-" + newroom)
+				if ( room.Name == "$fr-" + newroom ) {
+					alreadyexists = 1;
+					console.log("name: " + room.Name + " bestaat al!" )
+				}
+			}
+			// Add rooms
+			//http://192.168.0.31:8080/json.htm?type=command&param=addplan&name=fr-test
+			});
+			if ( alreadyexists == 0 ) {
+				var url = localStorage.domoticzUrl + "/json.htm?type=command&param=addplan&name=" + '$fr-' + newroom;
+				console.log(url)
+				$.getJSON(url, function(data) {
+				});
+			}
+		});
+}
+
 $(document).ready(function() {
 	if (!localStorage.domoticzUrl || localStorage.domoticzUrl == 'undefined') {
 		loadsettingsfromdomoticz(1)
 	}
+	domoticsAddRoom("Test Room")
+	domoticsAddRoom("Test Room2")
 	readHardware();
 	createRooms();
 	readCams();
