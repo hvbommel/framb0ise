@@ -819,6 +819,10 @@ $(document).ready(function() {
 		localStorage.domoticzUrl = $(location).attr('protocol') + "//" + $(location).attr('host');
 		loadsettingsfromdomoticz(1)
 	}
+<<<<<<< HEAD
+=======
+
+>>>>>>> 5d1a01be4eb29335735cc666de978a3e0a453ccb
 	readHardware();
 	createRooms();
 	readCams();
