@@ -32,7 +32,7 @@ function updateRss() {
 
 function updateCalendar() {
 	$("#room-calendar").empty();
-	var icsUrl = 'https://crossorigin.me/' + localStorage.getItem('icsUrl');
+	var icsUrl = '' + localStorage.getItem('icsUrl');
 	new ical_parser(icsUrl, function(cal) {
 		var events = cal.getFutureEvents();
 		var counter = 0;
@@ -82,7 +82,7 @@ function editSettings() {
 		for (var i = 0, len = localStorage.length; i < len; i++) {
 			var key = localStorage.key(i);
 			var value = localStorage[key];
-			if (key == "inlineRadio1" || key == "inlineRadio2" || key == "inlineRadio3" ) {
+			if (key == "inlineRadio1" || key == "inlineRadio2" || key == "inlineRadio3") {
 				$('#' + key).attr("checked", "checked");
 			}
 		}
@@ -120,8 +120,7 @@ function saveSettings() {
 			jsonvar = saveSettingVar("SaveDomoticz", $(this).val(), jsonvar)
 			jsonvar = saveSettingVar(RadioId, $(this).val(), jsonvar)
 			console.log("Radio=" + $(this).val() + $(this).is(":checked"))
-		}
-		else {
+		} else {
 			localStorage.removeItem(RadioId);
 		}
 	});
@@ -136,25 +135,25 @@ function saveSettings() {
 		}
 	});
 	// {"domoticzUrl":"http://192.168.0.30:8080""icsUrl":"""rssUrl":"""panelClass":"panel-primary""SaveDomoticz":"0"}
-	if ( localStorage.SaveDomoticz >= 2 ) {
+	if (localStorage.SaveDomoticz >= 2) {
 		var url = localStorage.domoticzUrl + '/json.htm?type=command&param=updateuservariable&vname=framb0ise&vtype=2&vvalue={' + jsonvar + '}';
 		console.log("Update Domoticz uservariable framb0ise:" + url)
-		$.getJSON(url, function(data) {
-
-		});
+		$.getJSON(url, function(data) {});
 	}
 	location.reload();
 }
-function saveSettingVar(name,val,jsoninp) {
+
+function saveSettingVar(name, val, jsoninp) {
 	localStorage.setItem(name, val)
-	if ( jsoninp != "" ) {
+	if (jsoninp != "") {
 		jsoninp = jsoninp + ',';
 	}
 	return jsoninp + '"' + name + '":"' + val + '"'
 }
+
 function updateTraffic() {
 	var widget;
-	var url = 'https://crossorigin.me/https://www.anwb.nl/feeds/gethf';
+	var url = 'https://www.anwb.nl/feeds/gethf';
 	$.getJSON(url, function(data) {
 		data.roadEntries.forEach(function(road) {
 			if (road.events.trafficJams.length != 0) {
@@ -183,6 +182,26 @@ function updateTraffic() {
 }
 
 function updateWeathermap() {
+	var rainArray = [];
+	var url = localStorage.domoticzUrl + '/json.htm?type=settings';
+	$.getJSON(url, function(data) {
+		var latitude = data.Location.Latitude;
+		var longitude = data.Location.Longitude;
+		var url = 'https://crossorigin.me/https://gpsgadget.buienradar.nl/data/raintext?lat=' + latitude + '&lon=' + longitude;
+		$.get(url, function(data) {
+			var rainData = data.split("\n");
+			rainData.forEach(function(data) {
+				if (data.substring(0, 3) != "000") {
+					rainArray.push(data.substring(4, 9))
+				}
+			})
+			if (rainArray.length > 1) {
+				$("#title-weathermap").html('<b><i class="fa fa-umbrella fa-lg" aria-hidden="true"></i> rain from ' + rainArray[0] + ' to ' + rainArray[rainArray.length - 1]).css('color', 'orange');
+			} else {
+				$("#title-weathermap").html('<b><i class="fa fa-umbrella fa-lg" aria-hidden="true"></i>');
+			}
+		});
+	})
 	$("#room-weathermap").empty();
 	var widget = '<tr><td colspan="2"><img src="https://api.buienradar.nl/image/1.0/RadarMapNL?w=256&h=256" width=100%></td></tr>';
 	$("#room-weathermap").append(widget);
@@ -190,12 +209,12 @@ function updateWeathermap() {
 
 function setDimmer(idx, value) {
 	var url = localStorage.domoticzUrl + '/json.htm?type=command&param=switchlight&idx=' + idx + '&switchcmd=Set%20Level&level=' + value;
-	$.getJSON(url, function(data) {
+	$.get(url, function(data) {
 		checkWidgets();
 	});
 }
 
-function readSettings() {
+function readSettings(settings) {
 	var url = localStorage.domoticzUrl + '/json.htm?type=settings';
 	$.getJSON(url, function(data) {});
 }
@@ -242,8 +261,8 @@ function readHardware() {
 }
 
 function updateDarkSky() {
-	url = 'https://crossorigin.me/https://api.darksky.net/forecast/' + localStorage.DarkSkyUsername + '/' + localStorage.DarkSkyPassword + '?units=ca';
-	$.getJSON(url, function(data) {
+	url = 'https://cors.5apps.com/?uri=https://api.darksky.net/forecast/' + localStorage.DarkSkyUsername + '/' + localStorage.DarkSkyPassword + '?units=ca';
+	$.get(url, function(data) {
 		if (data.currently) {
 			var skycons = new Skycons({
 				"color": "black"
@@ -292,8 +311,13 @@ function updateDarkSky() {
 			$("#td-darksky-precipprobability").html(precipProbability + ' %');
 			var temperature = data.currently.temperature;
 			temperature = parseFloat(temperature);
-			temperature = temperature.toFixed(1);
-			$("#title-weather").html('<b><i class="fa fa-thermometer-half fa-lg" aria-hidden="true"></i> ' + temperature + ' &deg;c</b>');
+			temperature = temperature.toFixed(1); //data-container="body" data-toggle="popover" data-placement="bottom" data-content="Click here to refresh the page."
+			var weatherReport = '<small>today: ' + data.daily.data[0].summary;
+			weatherReport += '<br>tommorow: ' + data.daily.data[1].summary;
+			$("#title-weather").html('<b><i class="fa fa-thermometer-half fa-lg" aria-hidden="true"></i> ' + temperature + ' &deg;c</b>').attr('data-container', 'body').attr('data-placement', 'right').attr('data-content', weatherReport).attr('data-toggle', 'popover').attr('data-html', 'true');
+			$('[data-toggle="popover"]').popover({
+				trigger: "hover"
+			});
 			$("#td-darksky-wind").html(data.currently.windSpeed + ' km/h');
 			skycons.play();
 		}
@@ -346,7 +370,7 @@ function switchLight(idx, action) {
 function checkWidgets() {
 	//http://192.168.0.30:8080/jos/undefined/json.htm?type=devices&filter=all&used=true&order=Name&lastupdate=0
 	if (typeof(localStorage.domoticzUrl) == "undefined") {
-		console.log( "!!! reset domoticzUrl")
+		console.log("!!! reset domoticzUrl")
 		localStorage.domoticzUrl = "";
 	}
 	var url = localStorage.domoticzUrl + "/json.htm?type=devices&filter=all&used=true&order=Name&lastupdate=" + LastUpdateTime;
@@ -367,7 +391,6 @@ function updateWidget(device) {
 }
 
 function createRooms() {
-	$('[data-toggle="popover"]').popover({ trigger: "hover" });
 	var col = 1;
 	var roomWidget;
 	var widget;
@@ -449,7 +472,7 @@ function createRooms() {
 		setInterval(updateRss, 300000);
 	}
 	if (localStorage.weathermapWidget == 1) {
-		roomWidget = '<div class="panel ' + panelClass + '"><div class="panel-heading"><b><i class="fa fa-umbrella fa-lg" aria-hidden="true"></i></b></div><table class="table" id="room-weathermap"></table></div>';
+		roomWidget = '<div class="panel ' + panelClass + '"><div id="title-weathermap" class="panel-heading"></b></div><table class="table" id="room-weathermap"></table></div>';
 		$("#col-" + col).append(roomWidget);
 		col++;
 		if (col == 4) {
@@ -495,7 +518,10 @@ function createRooms() {
 			});
 		});
 	});
-	setInterval(fullPagerefresh, 60 * 60 * 1000)
+	setInterval(fullPagerefresh, 60 * 60 * 1000);
+	$('[data-toggle="popover"]').popover({
+		trigger: "hover"
+	});
 }
 
 function createWidget(device) {
@@ -509,10 +535,10 @@ function createWidget(device) {
 		$("#room-" + device.PlanID).append(widget);
 		styleWidget(device);
 	} else {
-		if (device.CounterToday){
-			var data=device.CounterToday +' ('+device.Data+')';
+		if (device.CounterToday) {
+			var data = device.CounterToday + ' (' + device.Data + ')';
 		} else {
-			var data=device.Data;
+			var data = device.Data;
 		}
 		widget = '<tr><td class="device">' + device.Name + '</td><td class="data" id="td-' + device.PlanID + "-" + device.idx + '">' + data + '</td></tr>';
 		$("#room-" + device.PlanID).append(widget);
@@ -579,7 +605,7 @@ function styleWidget(device) {
 			setDimmer(device.idx, slideEvt.value);
 		});
 		break;
-	case "Venetian Blinds EU","Blinds" :
+	case "Venetian Blinds EU", "Blinds":
 		if (device.Data == 'Open') {
 			switchClass = 'btn btn-success btn-primary glyphicon glyphicon-off active';
 		} else {
@@ -587,7 +613,7 @@ function styleWidget(device) {
 		}
 		$('#td-' + device.PlanID + "-" + device.idx).html('<button type="button" class="' + switchClass + '" Onclick="switchLight(' + device.idx + ')"></button>');
 		break;
-	case "Venetian Blinds EU Inverted","Blinds Inverted" :
+	case "Venetian Blinds EU Inverted", "Blinds Inverted":
 		if (device.Data == 'Open') {
 			switchClass = 'btn btn-primary glyphicon glyphicon-off active';
 		} else {
@@ -595,7 +621,7 @@ function styleWidget(device) {
 		}
 		$('#td-' + device.PlanID + "-" + device.idx).html('<button type="button" class="' + switchClass + '" Onclick="switchLight(' + device.idx + ')"></button>');
 		break;
-	case "Venetian Blinds EU Percentage","Blinds Percentage":
+	case "Venetian Blinds EU Percentage", "Blinds Percentage":
 		if (device.Data == 'Open') {
 			switchClass = 'btn btn-success btn-primary glyphicon glyphicon-off active';
 		} else {
@@ -607,7 +633,7 @@ function styleWidget(device) {
 			setDimmer(device.idx, slideEvt.value);
 		});
 		break;
-	case "Venetian Blinds EU Percentage Inverted","Blinds Percentage Inverted":
+	case "Venetian Blinds EU Percentage Inverted", "Blinds Percentage Inverted":
 		if (device.Data == 'Open') {
 			switchClass = 'btn btn-primary glyphicon glyphicon-off active';
 		} else {
@@ -737,43 +763,41 @@ function loadsettingsfromdomoticz(level) {
 	$.getJSON(url, function(data) {
 		data.result.forEach(function(uservar) {
 			//console.log("uservar.Name = " + uservar.Name);
-			if ( uservar.Name == "framb0ise" ) {
+			if (uservar.Name == "framb0ise") {
 				console.log("Found " + uservar.Name + "=" + uservar.idx);
-				var url = '/json.htm?type=command&param=getuservariable&idx=' + uservar.idx ;
+				var url = '/json.htm?type=command&param=getuservariable&idx=' + uservar.idx;
 				console.log(url);
 				found = 1;
 				$.getJSON(url, function(settings) {
 					var changes = 0;
 					settings.result.forEach(function(info) {
-						console.log(info["Value"]) ;
+						console.log(info["Value"]);
 						var fields = JSON.parse(info["Value"]);
-						if ( fields["SaveDomoticz"] >= level ) {
-							console.log(" force check of changes ..") ;
-							for(field in fields){
-								if ( localStorage.getItem(field) != fields[field] ) {
-									localStorage.setItem(field, fields[field]) ;
+						if (fields["SaveDomoticz"] >= level) {
+							console.log(" force check of changes ..");
+							for (field in fields) {
+								if (localStorage.getItem(field) != fields[field]) {
+									localStorage.setItem(field, fields[field]);
 									changes = 1;
 									console.log("changed -> field: " + field + "   Value: " + fields[field]);
 								}
 							}
 						}
-					if ( changes == 1 ) {
-						console.log(" Changes found ... reload website") ;
-						location.reload();
-					}
+						if (changes == 1) {
+							console.log(" Changes found ... reload website");
+							location.reload();
+						}
+					});
 				});
-			});
 			}
 		});
-		if ( found == 0 ) {
+		if (found == 0) {
 			console.log("Domoticz uservariable framb0ise not found .. making uservar in domoticz")
 			var url = localStorage.domoticzUrl + '/json.htm?type=command&param=saveuservariable&vname=framb0ise&vtype=2&vvalue={"domoticzUrl":"' + $(location).attr('protocol') + "//" + $(location).attr('host') + '"}';
-			$.getJSON(url, function(data) {
-			});
+			$.getJSON(url, function(data) {});
 		}
 	});
 }
-
 $(document).ready(function() {
 	// load settings from domoticsz uservariable
 	if (!localStorage.domoticzUrl || localStorage.domoticzUrl == 'undefined') {
@@ -781,11 +805,9 @@ $(document).ready(function() {
 		localStorage.SaveDomoticz = 0;
 		localStorage.domoticzUrl = $(location).attr('protocol') + "//" + $(location).attr('host');
 		loadsettingsfromdomoticz(1)
-	}
-	else {
+	} else {
 		loadsettingsfromdomoticz(3)
 	}
-
 	readHardware();
 	createRooms();
 	readCams();
