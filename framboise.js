@@ -468,10 +468,10 @@ function createRooms() {
 							$.each(localStorage, function(key, value) {
 								if (~key.indexOf("cam")) {
 									if (value == cam.idx) {
-										roomWidget = '<div class="panel ' + panelClass + '"><div class="panel-heading" id="title-' + value + '"><i class="fa fa-camera fa-lg" aria-hidden="true"></i><b> ' + cam.Name + '</b></div><table class="table" id="room-' + value + '"></table></div>';
+										roomWidget = '<div class="panel ' + panelClass + '"><div class="panel-heading" id="title-' + value + '"><i class="fa fa-camera fa-lg" aria-hidden="true"></i><b> ' + cam.Name + '</b></div><table class="table" id="cameraroom-' + value + '"></table></div>';
 										$("#col-" + col).append(roomWidget);
 										widget = '<tr><td  colspan="2"><img id="snapshot-' + cam.idx + '" width="100%"></img></td></tr>';
-										$("#room-" + value).append(widget);
+										$("#cameraroom-" + value).append(widget);
 										col++;
 										if (col == 4) {
 											col = 1;
