@@ -102,22 +102,17 @@ function editSettings() {
 function saveSettings() {
 	var jsonvar = "";
 	var domoticzUrl = $("#domoticzUrl").val();
-	//localStorage.setItem('domoticzUrl', domoticzUrl)
 	jsonvar = saveSettingVar('domoticzUrl', domoticzUrl, jsonvar)
 	var icsUrl = $("#icsUrl").val();
-	//localStorage.setItem('icsUrl', icsUrl)
 	jsonvar = saveSettingVar('icsUrl', icsUrl, jsonvar)
 	var rssUrl = $("#rssUrl").val();
-	//localStorage.setItem('rssUrl', rssUrl)
 	jsonvar = saveSettingVar('rssUrl', rssUrl, jsonvar)
 	var panelClass = $("#panelClass").val();
-	//localStorage.setItem('panelClass', panelClass)
 	jsonvar = saveSettingVar('panelClass', panelClass, jsonvar)
 	$('input[type=radio]').each(function() {
 		var RadioId = $(this).attr('id');
 		if ($(this).is(":checked")) {
 			localStorage.setItem(RadioId, 1);
-			console.log("Radio=" + $(this).val() + $(this).is(":checked"))
 		} else {
 			localStorage.removeItem(RadioId);
 		}
@@ -134,7 +129,6 @@ function saveSettings() {
 	});
 	if (localStorage.inlineRadio2 == 1) {
 		var url = localStorage.domoticzUrl + '/json.htm?type=command&param=updateuservariable&vname=framb0ise&vtype=2&vvalue={' + jsonvar + '}';
-		console.log("Update Domoticz uservariable framb0ise:" + url)
 		$.getJSON(url, function(data) {});
 	}
 	location.reload();
@@ -375,7 +369,6 @@ function switchLight(idx, action) {
 function checkWidgets() {
 	//http://192.168.0.30:8080/jos/undefined/json.htm?type=devices&filter=all&used=true&order=Name&lastupdate=0
 	if (typeof(localStorage.domoticzUrl) == "undefined") {
-		console.log("!!! reset domoticzUrl")
 		localStorage.domoticzUrl = "";
 	}
 	var url = localStorage.domoticzUrl + "/json.htm?type=devices&filter=all&used=true&order=Name&lastupdate=" + LastUpdateTime;
@@ -768,27 +761,20 @@ function loadsettingsfromdomoticz() {
 	localStorage.clear();
 	$.getJSON(url, function(data) {
 		data.result.forEach(function(uservar) {
-			//console.log("uservar.Name = " + uservar.Name);
 			if (uservar.Name == "framb0ise") {
-				console.log("Found " + uservar.Name + "=" + uservar.idx);
 				var url = '/json.htm?type=command&param=getuservariable&idx=' + uservar.idx;
-				console.log(url);
 				found = 1;
 				$.getJSON(url, function(settings) {
 					var changes = 0;
 					settings.result.forEach(function(info) {
-						console.log(info["Value"]);
 						var fields = JSON.parse(info["Value"]);
-						console.log(" force check of changes ..");
 						for (field in fields) {
 							if (localStorage.getItem(field) != fields[field]) {
 								localStorage.setItem(field, fields[field]);
 								changes = 1;
-								console.log("changed -> field: " + field + "   Value: " + fields[field]);
 							}
 						}
 						if (changes == 1) {
-							console.log(" Changes found ... reload website");
 							location.reload();
 						}
 					});
@@ -796,16 +782,13 @@ function loadsettingsfromdomoticz() {
 			}
 		});
 		if (found == 0) {
-			console.log("Domoticz uservariable framb0ise not found .. making uservar in domoticz")
 			var url = localStorage.domoticzUrl + '/json.htm?type=command&param=saveuservariable&vname=framb0ise&vtype=2&vvalue={"domoticzUrl":"' + $(location).attr('protocol') + "//" + $(location).attr('host') + '"}';
 			$.getJSON(url, function(data) {});
 		}
 	});
 }
 $(document).ready(function() {
-	// load settings from domoticsz uservariable
 	if (!localStorage.domoticzUrl || localStorage.domoticzUrl == 'undefined') {
-		console.log("No localstorage yet.");
 		localStorage.domoticzUrl = $(location).attr('protocol') + "//" + $(location).attr('host');
 		loadsettingsfromdomoticz(1)
 	}

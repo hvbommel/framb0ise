@@ -49,18 +49,9 @@
                 </div>
 
                 <div class="modal-body">
+
 					<div class="radio">
-					<label class="radio-inline">
-						<input type="radio" name="inlineRadioOptions" id="inlineRadio1" value="1">Save settings locally (this browser only).
-					</label>
-					</div>
-					<div class="radio">
-					<label class="radio-inline">
-						<input type="radio" name="inlineRadioOptions" id="inlineRadio2" value="2">Save settings to Domoticz (for all devices).
-					</label>
-					</div>
-					<div class="radio">
-					<button type="button" class="btn btn-primary glyphicon glyphicon-import" onclick="loadsettingsfromdomoticz()" data-dismiss="modal"></button> Import settings from domoticz.
+					 Import previously saved settings from domoticz. <button type="button" class="btn btn-primary glyphicon glyphicon-import" onclick="loadsettingsfromdomoticz()" data-dismiss="modal"></button>
 					</div>
 					<div class="form-group">
 						<label for="domoticzUrl">domoticz server</label><input type="text" class="form-control" id="domoticzUrl" placeholder="e.g. http://x.x.x.x:8080 or https://user:pass@x.x.x.x">					</div>
@@ -114,6 +105,20 @@
 						<label for="domoCams">Webcams</label>
 						<div id="domoCams"></div>
 					</div>
+
+				<div class="form-group">
+					<label for="settingsTitle">Settings storage location:</label>
+				<div class="radio" id="settingsTitle">
+					<label class="radio-inline">
+						<input type="radio" name="inlineRadioOptions" id="inlineRadio1" value="1">Local (this browser only).
+					</label>
+					</div>
+					<div class="radio">
+					<label class="radio-inline">
+						<input type="radio" name="inlineRadioOptions" id="inlineRadio2" value="2">Domoticz (for all devices).
+					</label>
+					</div>
+				</div>
 				</div>
 				<div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> <button type="button" class="btn btn-primary" onclick="saveSettings()">Save changes</button>
