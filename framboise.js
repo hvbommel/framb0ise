@@ -134,6 +134,7 @@ function saveSettings() {
 	location.reload();
 }
 
+
 function saveSettingVar(name, val, jsoninp) {
 	localStorage.setItem(name, val)
 	if (jsoninp != "") {
@@ -392,115 +393,114 @@ function createRooms() {
 		localStorage.panelClass = 'panel-primary';
 	};
 	var panelClass = localStorage.panelClass;
-	if (localStorage.infoWidget == 1) {
-		roomWidget = '<div class="panel ' + panelClass + '"><div class="panel-heading" id="title-info"></div><table class="table" id="room-info"></table></div>';
-		$("#col-" + col).append(roomWidget);
-		widget = '<tr><td class="time" id="time" colspan="2"></td></tr>';
-		widget = widget + '<tr><td class="data" id="date" colspan="2"></td></tr>';
-		widget = widget + '<tr><td class="device"><i class="fa fa-sun-o fa-lg" aria-hidden="true"></i></td><<td class="data" id="sunrise"></td>/tr>';
-		widget = widget + '<tr><td class="device"><i class="fa fa-moon-o fa-lg" aria-hidden="true"></i></td><<td class="data" id="sunset"></td>/tr>';
-		$("#room-info").append(widget);
-		col++;
-		if (col == 4) {
-			col = 1;
-		}
-		updateTimeDate();
-		setInterval(updateTimeDate, 10000);
-	}
-	var url = localStorage.domoticzUrl + '/json.htm?type=cameras';
-	$.getJSON(url, function(data) {
-		data.result.forEach(function(cam) {
-			$.each(localStorage, function(key, value) {
-				if (~key.indexOf("cam")) {
-					if (value == cam.idx) {
-						roomWidget = '<div class="panel ' + panelClass + '"><div class="panel-heading" id="title-' + value + '"><i class="fa fa-camera fa-lg" aria-hidden="true"></i><b> ' + cam.Name + '</b></div><table class="table" id="room-' + value + '"></table></div>';
-						$("#col-" + col).append(roomWidget);
-						widget = '<tr><td  colspan="2"><img id="snapshot-' + cam.idx + '" width="100%"></img></td></tr>';
-						$("#room-" + value).append(widget);
-						col++;
-						if (col == 4) {
-							col = 1;
-						}
-						updateCams();
-						setInterval(updateCams, 10000);
-					}
-				}
-			})
-		})
-	})
-	if (localStorage.icsWidget == 1) {
-		roomWidget = '<div class="panel ' + panelClass + '"><div class="panel-heading" id="title-ics"><i class="fa fa-calendar fa-lg" aria-hidden="true"></i></div><table class="table" id="room-ics"></table></div>';
-		$("#col-" + col).append(roomWidget);
-		col++;
-		if (col == 4) {
-			col = 1;
-		}
-		updateIcs();
-		setInterval(updateIcs, 60 * 60 * 1000);
-	}
-	if (localStorage.darkskyWidget == 1) {
-		roomWidget = '<div class="panel ' + panelClass + '"><div id="title-darksky" class="panel-heading"></div><table class="table" id="room-darksky"></table></div>';
-		$("#col-" + col).append(roomWidget);
-		widget = '<tr><td class="data" id="td-darksky-icon" colspan="2" align="center"></td></tr>';
-		widget = widget + '<tr><td class="device" id="td-darksky-preciptype"></td><td class="data" id="td-darksky-precipprobability"></td></tr>';
-		widget = widget + '<tr><td class="device"><i class="fa fa-flag fa-lg" aria-hidden="true"></i></td><td class="data" id="td-darksky-wind"></td></tr>';
-		$("#room-darksky").append(widget);
-		col++;
-		if (col == 4) {
-			col = 1;
-		}
-		updateDarkSky();
-		setInterval(updateDarkSky, 300000);
-	}
-	if (localStorage.anwbWidget == 1) {
-		if (!localStorage.rssUrl) {
-			localStorage.rssUrl = 'http://www.nu.nl/rss/Algemeen';
-		}
-		roomWidget = '<div class="panel ' + panelClass + '"><div class="panel-heading" id="title-rss"><i class="fa fa-newspaper-o fa-lg" aria-hidden="true"></i></div><table class="table" id="room-rss"></table></div>';
-		$("#col-" + col).append(roomWidget);
-		col++;
-		if (col == 4) {
-			col = 1;
-		}
-		updateRss();
-		setInterval(updateRss, 300000);
-	}
-	if (localStorage.buienradarWidget == 1) {
-		roomWidget = '<div class="panel ' + panelClass + '"><div id="title-buienradar" class="panel-heading"></b></div><table class="table" id="room-buienrader"></table></div>';
-		$("#col-" + col).append(roomWidget);
-		col++;
-		if (col == 4) {
-			col = 1;
-		}
-		updateBuienradar();
-		setInterval(updateBuienradar, 1800000);
-	}
-	if (localStorage.anwbWidget == 1) {
-		roomWidget = '<div class="panel ' + panelClass + '"><div class="panel-heading"><b><i class="fa fa-car fa-lg" aria-hidden="true"></i></b></div><table class="table" id="room-anwb"></table></div>';
-		$("#col-" + col).append(roomWidget);
-		widget = '<tr><td class="device"></td><td class="data" id="td-trafficjams"></td></tr></table>';
-		$("#room-anwb").append(widget);
-		col++;
-		if (col == 4) {
-			col = 1;
-		}
-		updateANWB();
-		setInterval(updateANWB, 300000);
-	}
-
 	var url = localStorage.domoticzUrl + "/json.htm?type=plans&displayhidden=1";
+
 	$.getJSON(url, function(data) {
 		data.result.forEach(function(room) {
 			// framb0ise specific rooms  Need to add the rest of the widgets stuff inside this if
 			if (room.Name.substring(0, 4) == "$fr-" ) {
-				var fixroom = room.Name.substring(4);
-				console.log("fixroom:" + fixroom + "name: " + room.Name + " Order:" + room.Order + " idx:" + room.idx)
-				switch (fixroom) {
-				case "Test Room":
-					console.log ("logic for test room")
+				var fixedroom = room.Name.substring(4);
+				console.log("fixedroom:" + fixedroom + "  name: " + room.Name + " Order:" + room.Order + " idx:" + room.idx)
+				switch (fixedroom) {
+				case "anwbWidget":
+					console.log ("logic for anwbWidget")
+					if (localStorage.anwbWidget == 1) {
+						roomWidget = '<div class="panel ' + panelClass + '"><div class="panel-heading"><b><i class="fa fa-car fa-lg" aria-hidden="true"></i></b></div><table class="table" id="room-anwb"></table></div>';
+						$("#col-" + col).append(roomWidget);
+						widget = '<tr><td class="device"></td><td class="data" id="td-trafficjams"></td></tr></table>';
+						$("#room-anwb").append(widget);
+						col++;
+						if (col == 4) {
+							col = 1;
+						}
+						updateANWB();
+						setInterval(updateANWB, 300000);
+					}
 					break;
-				case "Test Room2":
-					console.log ("logic for test room2")
+				case "buienradarWidget":
+					console.log ("logic for buienradarWidget")
+					if (localStorage.buienradarWidget == 1) {
+						roomWidget = '<div class="panel ' + panelClass + '"><div id="title-buienradar" class="panel-heading"></b></div><table class="table" id="room-buienrader"></table></div>';
+						$("#col-" + col).append(roomWidget);
+						col++;
+						if (col == 4) {
+							col = 1;
+						}
+						updateBuienradar();
+						setInterval(updateBuienradar, 1800000);
+					}
+					break;
+				case "darkskyWidget":
+					console.log ("logic for darkskyWidget")
+					if (localStorage.darkskyWidget == 1) {
+						roomWidget = '<div class="panel ' + panelClass + '"><div id="title-darksky" class="panel-heading"></div><table class="table" id="room-darksky"></table></div>';
+						$("#col-" + col).append(roomWidget);
+						widget = '<tr><td class="data" id="td-darksky-icon" colspan="2" align="center"></td></tr>';
+						widget = widget + '<tr><td class="device" id="td-darksky-preciptype"></td><td class="data" id="td-darksky-precipprobability"></td></tr>';
+						widget = widget + '<tr><td class="device"><i class="fa fa-flag fa-lg" aria-hidden="true"></i></td><td class="data" id="td-darksky-wind"></td></tr>';
+						$("#room-darksky").append(widget);
+						col++;
+						if (col == 4) {
+							col = 1;
+						}
+						updateDarkSky();
+						setInterval(updateDarkSky, 300000);
+					}
+					break;
+				case "icsWidget":
+					console.log ("logic for icsWidget")
+					if (localStorage.icsWidget == 1) {
+						roomWidget = '<div class="panel ' + panelClass + '"><div class="panel-heading" id="title-ics"><i class="fa fa-calendar fa-lg" aria-hidden="true"></i></div><table class="table" id="room-ics"></table></div>';
+						$("#col-" + col).append(roomWidget);
+						col++;
+						if (col == 4) {
+							col = 1;
+						}
+						updateIcs();
+						setInterval(updateIcs, 60 * 60 * 1000);
+					}
+					break;
+				case "cameraWidget":
+					console.log ("logic for CameraWidget")
+					var url = localStorage.domoticzUrl + '/json.htm?type=cameras';
+					$.getJSON(url, function(data) {
+						data.result.forEach(function(cam) {
+							$.each(localStorage, function(key, value) {
+								if (~key.indexOf("cam")) {
+									if (value == cam.idx) {
+										roomWidget = '<div class="panel ' + panelClass + '"><div class="panel-heading" id="title-' + value + '"><i class="fa fa-camera fa-lg" aria-hidden="true"></i><b> ' + cam.Name + '</b></div><table class="table" id="room-' + value + '"></table></div>';
+										$("#col-" + col).append(roomWidget);
+										widget = '<tr><td  colspan="2"><img id="snapshot-' + cam.idx + '" width="100%"></img></td></tr>';
+										$("#room-" + value).append(widget);
+										col++;
+										if (col == 4) {
+											col = 1;
+										}
+										updateCams();
+										setInterval(updateCams, 10000);
+									}
+								}
+							})
+						})
+					})
+					break;
+				case "infoWidget":
+					console.log ("logic for infoWidget")
+					if (localStorage.infoWidget == 1) {
+						roomWidget = '<div class="panel ' + panelClass + '"><div class="panel-heading" id="title-info"></div><table class="table" id="room-info"></table></div>';
+						$("#col-" + col).append(roomWidget);
+						widget = '<tr><td class="time" id="time" colspan="2"></td></tr>';
+						widget = widget + '<tr><td class="data" id="date" colspan="2"></td></tr>';
+						widget = widget + '<tr><td class="device"><i class="fa fa-sun-o fa-lg" aria-hidden="true"></i></td><<td class="data" id="sunrise"></td>/tr>';
+						widget = widget + '<tr><td class="device"><i class="fa fa-moon-o fa-lg" aria-hidden="true"></i></td><<td class="data" id="sunset"></td>/tr>';
+						$("#room-info").append(widget);
+						col++;
+						if (col == 4) {
+							col = 1;
+						}
+						updateTimeDate();
+						setInterval(updateTimeDate, 10000);
+					}
 					break;
 				}
 			}
@@ -802,7 +802,7 @@ function loadsettingsfromdomoticz() {
 	});
 }
 
-function domoticsAddRoom(newroom) {
+function domoticzAddRoom(newroom) {
 	var url = localStorage.domoticzUrl + "/json.htm?type=plans&displayhidden=1";
 	var alreadyexists = false;
 	$.getJSON(url, function(data) {
@@ -825,13 +825,22 @@ function domoticsAddRoom(newroom) {
 		});
 }
 
+function initializeDomoticzRooms() {
+	domoticzAddRoom("anwbWidget")
+	domoticzAddRoom("buienradarWidget")
+	domoticzAddRoom("darkskyWidget")
+	domoticzAddRoom("icsWidget")
+	domoticzAddRoom("cameraWidget")
+	domoticzAddRoom("infoWidget")
+}
+
 $(document).ready(function() {
 	if (!localStorage.domoticzUrl || localStorage.domoticzUrl == 'undefined') {
 		loadsettingsfromdomoticz(1)
 	}
 	// testing checking adding rooms
-	domoticsAddRoom("Test Room")
-	domoticsAddRoom("Test Room2")
+	initializeDomoticzRooms()
+
 	readHardware();
 	createRooms();
 	readCams();
