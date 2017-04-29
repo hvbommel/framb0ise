@@ -132,12 +132,7 @@ function saveSettings() {
 			localStorage.removeItem(checkboxId);
 		}
 	});
-<<<<<<< HEAD
-	// {"domoticzUrl":"http://192.168.0.30:8080""icsUrl":"""rssUrl":"""panelClass":"panel-primary""SaveDomoticz":"0"}
-	if (localStorage.SaveDomoticz >= 2) {
-=======
 	if ( localStorage.inlineRadio2 == 1 ) {
->>>>>>> 5d1a01b... Updated version of save/restore settings in domoticz
 		var url = localStorage.domoticzUrl + '/json.htm?type=command&param=updateuservariable&vname=framb0ise&vtype=2&vvalue={' + jsonvar + '}';
 		console.log("Update Domoticz uservariable framb0ise:" + url)
 		$.getJSON(url, function(data) {});
@@ -794,23 +789,12 @@ function loadsettingsfromdomoticz() {
 					settings.result.forEach(function(info) {
 						console.log(info["Value"]);
 						var fields = JSON.parse(info["Value"]);
-<<<<<<< HEAD
-						if (fields["SaveDomoticz"] >= level) {
-							console.log(" force check of changes ..");
-							for (field in fields) {
-								if (localStorage.getItem(field) != fields[field]) {
-									localStorage.setItem(field, fields[field]);
-									changes = 1;
-									console.log("changed -> field: " + field + "   Value: " + fields[field]);
-								}
-=======
 						console.log(" force check of changes ..") ;
 						for(field in fields){
 							if ( localStorage.getItem(field) != fields[field] ) {
 								localStorage.setItem(field, fields[field]) ;
 								changes = 1;
 								console.log("changed -> field: " + field + "   Value: " + fields[field]);
->>>>>>> 5d1a01b... Updated version of save/restore settings in domoticz
 							}
 						}
 						if (changes == 1) {
@@ -834,14 +818,7 @@ $(document).ready(function() {
 		console.log("No localstorage yet.");
 		localStorage.domoticzUrl = $(location).attr('protocol') + "//" + $(location).attr('host');
 		loadsettingsfromdomoticz(1)
-<<<<<<< HEAD
-	} else {
-		loadsettingsfromdomoticz(3)
 	}
-=======
-	}
-
->>>>>>> 5d1a01b... Updated version of save/restore settings in domoticz
 	readHardware();
 	createRooms();
 	readCams();
