@@ -503,7 +503,7 @@ function createRooms() {
 				$.getJSON(url1, function(data1) {
 					data1.result.forEach(function(device1) {
 						data2.result.forEach(function(device2) {
-							if (device1.Name == device2.Name || device1.Name == "[Scene] " + device2.Name) {
+							if (device1.devidx == device2.idx || device1.Name == "[Scene] " + device2.Name) {
 								createWidget(device2);
 							}
 						});
