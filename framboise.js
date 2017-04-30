@@ -138,11 +138,6 @@ function saveSettings() {
 		var url = localStorage.domoticzUrl + '/json.htm?type=command&param=updateuservariable&vname=framb0ise&vtype=2&vvalue={' + jsonvar + '}';
 		$.getJSON(url, function(data) {});
 	}
-	domoticzAddRoom("infoWidget")
-	domoticzAddRoom("anwbWidget")
-	domoticzAddRoom("buienradarWidget")
-	domoticzAddRoom("darkskyWidget")
-	domoticzAddRoom("icsWidget")
 	location.reload();
 }
 
@@ -854,6 +849,7 @@ function domoticzAddRoom(newroom) {
 }
 
 function initializeDomoticzRooms() {
+	console.log("### Start Domo room create check")
 	domoticzAddRoom("anwbWidget")
 	domoticzAddRoom("buienradarWidget")
 	domoticzAddRoom("darkskyWidget")
@@ -866,8 +862,7 @@ $(document).ready(function() {
 	if (!localStorage.domoticzUrl || localStorage.domoticzUrl == 'undefined') {
 		loadsettingsfromdomoticz(1)
 	}
-	// testing checking adding rooms
-	//initializeDomoticzRooms()
+	initializeDomoticzRooms()
 
 	readHardware();
 	createRooms();
