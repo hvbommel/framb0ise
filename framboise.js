@@ -461,11 +461,23 @@ function createRooms() {
 					}
 					break;
 				case "cameraWidget":
+<<<<<<< HEAD
 
 				//create first
 				$.each(localStorage,function(key,value){
 					if (~key.indexOf("cam")) {
 						roomWidget = '<div class="panel ' + panelClass + '"><div class="panel-heading" id="title-' + value + '"><i class="fa fa-camera fa-lg" aria-hidden="true"></i><b></b></div><table class="table" id="cameraroom-' + value + '"></table></div>';
+=======
+					console.log ("logic for CameraWidget")
+					var url = localStorage.domoticzUrl + '/json.htm?type=cameras';
+					$.getJSON(url, function(data) {
+						data.result.forEach(function(cam) {
+							$.each(localStorage, function(key, value) {
+								if (~key.indexOf("cam")) {
+									if (value == cam.idx) {
+										console.log("Create Camera Widget" + value)
+										roomWidget = '<div class="panel ' + panelClass + '"><div class="panel-heading" id="title-' + value + '"><i class="fa fa-camera fa-lg" aria-hidden="true"></i><b> ' + cam.Name + '</b></div><table class="table" id="cameraroom-' + value + '"></table></div>';
+>>>>>>> 2846405... First part of changes devices in fixed rooms
 										$("#col-" + col).append(roomWidget);
 										widget = '<tr><td  colspan="2"><img id="snapshot-' + value + '" width="100%"></img></td></tr>';
 										$("#cameraroom-" + value).append(widget);
@@ -485,11 +497,15 @@ function createRooms() {
 
 						})
 					})
+<<<<<<< HEAD
 
 				//start your engines
 				updateCams();
 				setInterval(updateCams, 10000);
 
+=======
+					console.log("### Einde Camera Widget..")
+>>>>>>> 2846405... First part of changes devices in fixed rooms
 					break;
 				case "infoWidget":
 					console.log ("logic for infoWidget")
@@ -512,28 +528,35 @@ function createRooms() {
 				}
 			}
 			// for the others show only none hidden rooms
-			if (room.Name.substring(0, 1) != "$" ) {
+			//if (room.Name.substring(0, 1) != "$" ) {
+			if (room.Name.substring(0, 4) != "$fr-" ) {
 				roomWidget = '<div class="panel panel ' + panelClass + '"><div class="panel-heading"><b>' + room.Name + '</b></div><table class="table" id="room-' + room.idx + '"></table></div>';
 				$("#col-" + col).append(roomWidget);
 				col++;
 				if (col == 4) {
 					col = 1;
 				}
-				var url1 = localStorage.domoticzUrl + '/json.htm?type=command&param=getplandevices&idx=' + room.idx;
-				var url2 = localStorage.domoticzUrl + '/json.htm?type=devices&filter=all&used=true&order=Name&plan=' + room.idx;
-				var data2
-				$.getJSON(url2, function(data2) {
-					$.getJSON(url1, function(data1) {
+			}
+			var url1 = localStorage.domoticzUrl + '/json.htm?type=command&param=getplandevices&idx=' + room.idx;
+			var url2 = localStorage.domoticzUrl + '/json.htm?type=devices&filter=all&used=true&order=Name&plan=' + room.idx;
+			var data2
+			$.getJSON(url2, function(data2) {
+				$.getJSON(url1, function(data1) {
+					if ( typeof data1.result != "undefined" ) {
 						data1.result.forEach(function(device1) {
 							data2.result.forEach(function(device2) {
 								if (device1.Name == device2.Name || device1.Name == "[Scene] " + device2.Name) {
+									if (room.Name.substring(0, 4) == "$fr-" ) {
+										console.log("##### " + device2.Name + "  room:" + room.Name)
+									}
 									createWidget(device2);
 								}
 							});
 						});
-					});
+					}
 				});
-			}
+			});
+			//}
 		});
 	});
 	setInterval(fullPagerefresh, 60 * 60 * 1000);
