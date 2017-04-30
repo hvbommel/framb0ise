@@ -429,6 +429,8 @@ function createRooms() {
 						}
 						updateANWB();
 						setInterval(updateANWB, 300000);
+						localStorage.setItem("room-"+room.idx, "room-anwb")
+						AddDevices(room)
 					}
 					break;
 				case "buienradarWidget":
@@ -442,6 +444,8 @@ function createRooms() {
 						}
 						updateBuienradar();
 						setInterval(updateBuienradar, 1800000);
+						localStorage.setItem("room-"+room.idx, "room-buienrader")
+						AddDevices(room)
 					}
 					break;
 				case "darkskyWidget":
@@ -459,6 +463,8 @@ function createRooms() {
 						}
 						updateDarkSky();
 						setInterval(updateDarkSky, 300000);
+						localStorage.setItem("room-"+room.idx, "room-darksky")
+						AddDevices(room)
 					}
 					break;
 				case "icsWidget":
@@ -472,6 +478,8 @@ function createRooms() {
 						}
 						updateIcs();
 						setInterval(updateIcs, 60 * 60 * 1000);
+						localStorage.setItem("room-"+room.idx, "room-ics")
+						AddDevices(room)
 					}
 					break;
 				case "cameraWidget":
@@ -499,6 +507,7 @@ function createRooms() {
 						//start your engines
 						updateCams();
 						setInterval(updateCams, 10000);
+						AddDevices(room)
 					}
 					break;
 				case "infoWidget":
@@ -517,6 +526,8 @@ function createRooms() {
 						}
 						updateTimeDate();
 						setInterval(updateTimeDate, 10000);
+						localStorage.setItem("room-"+room.idx, "room-info")
+						AddDevices(room)
 					}
 					break;
 				}
@@ -530,25 +541,7 @@ function createRooms() {
 				if (col == 4) {
 					col = 1;
 				}
-				var url1 = localStorage.domoticzUrl + '/json.htm?type=command&param=getplandevices&idx=' + room.idx;
-				var url2 = localStorage.domoticzUrl + '/json.htm?type=devices&filter=all&used=true&order=Name&plan=' + room.idx;
-				var data2
-				$.getJSON(url2, function(data2) {
-					$.getJSON(url1, function(data1) {
-						data1.result.forEach(function(device1) {
-							data2.result.forEach(function(device2) {
-								if (device1.devidx == device2.idx) {
-									if ((device2.Type == "Scene" || device2.Type == "Group") && device1.Name.substring(0, 7) == "[Scene]") {
-										createWidget(device2);
-									}
-									if (device2.Type != "Scene" && device2.Type != "Group" && device1.Name.substring(0, 7) != "[Scene]") {
-										createWidget(device2);
-									}
-								}
-							});
-						});
-					});
-				});
+				AddDevices(room)
 			}
 		});
 	});
@@ -557,16 +550,46 @@ function createRooms() {
 		trigger: "hover"
 	});
 }
+function AddDevices(room) {
+	var url1 = localStorage.domoticzUrl + '/json.htm?type=command&param=getplandevices&idx=' + room.idx;
+	var url2 = localStorage.domoticzUrl + '/json.htm?type=devices&filter=all&used=true&order=Name&plan=' + room.idx;
+	var data2
+	$.getJSON(url2, function(data2) {
+		$.getJSON(url1, function(data1) {
+			if (typeof(data1.result) != "undefined") {
+				data1.result.forEach(function(device1) {
+					data2.result.forEach(function(device2) {
+						if (device1.devidx == device2.idx) {
+							if ((device2.Type == "Scene" || device2.Type == "Group") && device1.Name.substring(0, 7) == "[Scene]") {
+								createWidget(device2);
+							}
+							if (device2.Type != "Scene" && device2.Type != "Group" && device1.Name.substring(0, 7) != "[Scene]") {
+								createWidget(device2);
+							}
+						}
+					});
+				});
+			}
+		});
+	});
 
+}
 function createWidget(device) {
 	var widget;
+	var roomname = "room-" + device.PlanID
+	//~ console.log("@@@@ check for new roomname:" + roomname + "=" + localStorage.getItem(roomname))
+	if (localStorage.getItem(roomname) != null) {
+		console.log("@@@@ New roomname:" + localStorage.getItem(roomname) + "   device=" + device.Name + "  idx=" + device.idx )
+		roomname = localStorage.getItem(roomname);
+	}
+
 	if (device.Type == "Group") {
 		widget = '<tr><td class="device">' + device.Name + '</td><td class="data" id="ts-' + device.PlanID + "-" + device.idx + '">' + "scene" + '</td></tr>';
-		$("#room-" + device.PlanID).append(widget);
+		$("#"+roomname).append(widget);
 		styleWidget(device);
 	} else if (device.Type == "Scene") {
 		widget = '<tr><td class="device">' + device.Name + '</td><td class="data" id="ts-' + device.PlanID + "-" + device.idx + '">' + "scene" + '</td></tr>';
-		$("#room-" + device.PlanID).append(widget);
+		$("#"+roomname).append(widget);
 		styleWidget(device);
 	} else {
 		if (device.CounterToday) {
@@ -575,7 +598,7 @@ function createWidget(device) {
 			var data = device.Data;
 		}
 		widget = '<tr><td class="device">' + device.Name + '</td><td class="data" id="td-' + device.PlanID + "-" + device.idx + '">' + data + '</td></tr>';
-		$("#room-" + device.PlanID).append(widget);
+		$("#"+roomname).append(widget);
 		styleWidget(device);
 	}
 }
