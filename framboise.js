@@ -417,7 +417,7 @@ function createRooms() {
 					camname = fixedroom.substring(13);
 					camidx = fixedroom.substring(17);
 					fixedroom = "cameraWidget";
-					console.log(" room camname:" + camname + "  camidx:" + camidx)
+					//console.log(" room camname:" + camname + "  camidx:" + camidx)
 				}
 				console.log("fixedroom:" + fixedroom + "  name: " + room.Name + " Order:" + room.Order + " idx:" + room.idx)
 				switch (fixedroom) {
@@ -525,6 +525,7 @@ function createRooms() {
 			}
 			// for the others show only none hidden rooms
 			if (room.Name.substring(0, 1) != "$" ) {
+				console.log("Domoroom:" + room.Name + " Order:" + room.Order + " idx:" + room.idx)
 				roomWidget = '<div class="panel panel ' + panelClass + '"><div class="panel-heading"><b>' + room.Name + '</b></div><table class="table" id="room-' + room.idx + '"></table></div>';
 				$("#col-" + col).append(roomWidget);
 				col++;
@@ -538,7 +539,7 @@ function createRooms() {
 					$.getJSON(url1, function(data1) {
 						data1.result.forEach(function(device1) {
 							data2.result.forEach(function(device2) {
-								if (device1.Name == device2.Name || device1.Name == "[Scene] " + device2.Name) {
+								if (device1.devidx == device2.idx || device1.Name == "[Scene] " + device2.Name) {
 									createWidget(device2);
 								}
 							});
