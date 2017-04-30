@@ -91,7 +91,7 @@ function editSettings() {
 		for (var i = 0, len = localStorage.length; i < len; i++) {
 			var key = localStorage.key(i);
 			var value = localStorage[key];
-			if (value == 1) {
+			if (value >= 1) {
 				$('#' + key).attr("checked", "checked");
 			}
 		}
@@ -123,7 +123,14 @@ function saveSettings() {
 			value = $(this).val();
 			localStorage.setItem(checkboxId, value);
 			jsonvar = saveSettingVar(checkboxId, value, jsonvar)
+			//console.log("$$$$$-" + checkboxId + "-" + value)
+			if ( checkboxId.substring(0, 4) == "cam-" ) {
+				var croom = "cameraWidget-" + checkboxId
+				//console.log("$$$$$ Check room  -" + croom)
+				domoticzAddRoom(croom)
+			}
 		} else {
+			//console.log("$$$$$ Del -" + checkboxId)
 			localStorage.removeItem(checkboxId);
 		}
 	});
@@ -131,6 +138,11 @@ function saveSettings() {
 		var url = localStorage.domoticzUrl + '/json.htm?type=command&param=updateuservariable&vname=framb0ise&vtype=2&vvalue={' + jsonvar + '}';
 		$.getJSON(url, function(data) {});
 	}
+	domoticzAddRoom("infoWidget")
+	domoticzAddRoom("anwbWidget")
+	domoticzAddRoom("buienradarWidget")
+	domoticzAddRoom("darkskyWidget")
+	domoticzAddRoom("icsWidget")
 	location.reload();
 }
 
@@ -400,10 +412,17 @@ function createRooms() {
 			// framb0ise specific rooms  Need to add the rest of the widgets stuff inside this if
 			if (room.Name.substring(0, 4) == "$fr-" ) {
 				var fixedroom = room.Name.substring(4);
+				var camname = "";
+				if (fixedroom.substring(0,12) == "cameraWidget") {
+					camname = fixedroom.substring(13);
+					camidx = fixedroom.substring(17);
+					fixedroom = "cameraWidget";
+					console.log(" room camname:" + camname + "  camidx:" + camidx)
+				}
 				console.log("fixedroom:" + fixedroom + "  name: " + room.Name + " Order:" + room.Order + " idx:" + room.idx)
 				switch (fixedroom) {
 				case "anwbWidget":
-					console.log ("logic for anwbWidget")
+					//console.log ("logic for anwbWidget")
 					if (localStorage.anwbWidget == 1) {
 						roomWidget = '<div class="panel ' + panelClass + '"><div class="panel-heading"><b><i class="fa fa-car fa-lg" aria-hidden="true"></i></b></div><table class="table" id="room-anwb"></table></div>';
 						$("#col-" + col).append(roomWidget);
@@ -418,7 +437,7 @@ function createRooms() {
 					}
 					break;
 				case "buienradarWidget":
-					console.log ("logic for buienradarWidget")
+					//console.log ("logic for buienradarWidget")
 					if (localStorage.buienradarWidget == 1) {
 						roomWidget = '<div class="panel ' + panelClass + '"><div id="title-buienradar" class="panel-heading"></b></div><table class="table" id="room-buienrader"></table></div>';
 						$("#col-" + col).append(roomWidget);
@@ -431,7 +450,7 @@ function createRooms() {
 					}
 					break;
 				case "darkskyWidget":
-					console.log ("logic for darkskyWidget")
+					//console.log ("logic for darkskyWidget")
 					if (localStorage.darkskyWidget == 1) {
 						roomWidget = '<div class="panel ' + panelClass + '"><div id="title-darksky" class="panel-heading"></div><table class="table" id="room-darksky"></table></div>';
 						$("#col-" + col).append(roomWidget);
@@ -448,7 +467,7 @@ function createRooms() {
 					}
 					break;
 				case "icsWidget":
-					console.log ("logic for icsWidget")
+					//console.log ("logic for icsWidget")
 					if (localStorage.icsWidget == 1) {
 						roomWidget = '<div class="panel ' + panelClass + '"><div class="panel-heading" id="title-ics"><i class="fa fa-calendar fa-lg" aria-hidden="true"></i></div><table class="table" id="room-ics"></table></div>';
 						$("#col-" + col).append(roomWidget);
@@ -461,54 +480,31 @@ function createRooms() {
 					}
 					break;
 				case "cameraWidget":
-<<<<<<< HEAD
-
-				//create first
-				$.each(localStorage,function(key,value){
-					if (~key.indexOf("cam")) {
-						roomWidget = '<div class="panel ' + panelClass + '"><div class="panel-heading" id="title-' + value + '"><i class="fa fa-camera fa-lg" aria-hidden="true"></i><b></b></div><table class="table" id="cameraroom-' + value + '"></table></div>';
-=======
-					console.log ("logic for CameraWidget")
+					//console.log ("logic for CameraWidget - new")
+					//create first
+					//console.log("### RoomWidget CamTitles:" + "title-" + camidx)
+					roomWidget = '<div class="panel ' + panelClass + '"><div class="panel-heading" id="title-' + camidx + '"><i class="fa fa-camera fa-lg" aria-hidden="true"></i><b></b></div><table class="table" id="room-' + room.idx + '"></table></div>';
+					$("#col-" + col).append(roomWidget);
+					widget = '<tr><td  colspan="2"><img id="snapshot-' + camidx + '" width="100%"></img></td></tr>';
+					$("#room-" + room.idx).append(widget);
+					col++;
+					if (col == 4) {
+						col = 1;
+					}
+					//add camera stuff later
 					var url = localStorage.domoticzUrl + '/json.htm?type=cameras';
-					$.getJSON(url, function(data) {
-						data.result.forEach(function(cam) {
-							$.each(localStorage, function(key, value) {
-								if (~key.indexOf("cam")) {
-									if (value == cam.idx) {
-										console.log("Create Camera Widget" + value)
-										roomWidget = '<div class="panel ' + panelClass + '"><div class="panel-heading" id="title-' + value + '"><i class="fa fa-camera fa-lg" aria-hidden="true"></i><b> ' + cam.Name + '</b></div><table class="table" id="cameraroom-' + value + '"></table></div>';
->>>>>>> 2846405... First part of changes devices in fixed rooms
-										$("#col-" + col).append(roomWidget);
-										widget = '<tr><td  colspan="2"><img id="snapshot-' + value + '" width="100%"></img></td></tr>';
-										$("#cameraroom-" + value).append(widget);
-										col++;
-										if (col == 4) {
-											col = 1;
-										}
-
-						}
-				})
-				//add stuff later
-				var url = localStorage.domoticzUrl + '/json.htm?type=cameras';
-					$.getJSON(url, function(data) {
-						data.result.forEach(function(cam) {
-
-							$("#title-"+cam.idx).text(cam.Name)
-
+						$.getJSON(url, function(data) {
+							data.result.forEach(function(cam) {
+								$("#title-"+cam.idx).text(cam.Name)
+								//console.log("!!!CamTitles:" + "#title-"+cam.idx+"="+ cam.Name)
+							})
 						})
-					})
-<<<<<<< HEAD
-
-				//start your engines
-				updateCams();
-				setInterval(updateCams, 10000);
-
-=======
-					console.log("### Einde Camera Widget..")
->>>>>>> 2846405... First part of changes devices in fixed rooms
+					//start your engines
+					updateCams();
+					setInterval(updateCams, 10000);
 					break;
 				case "infoWidget":
-					console.log ("logic for infoWidget")
+					//console.log ("logic for infoWidget")
 					if (localStorage.infoWidget == 1) {
 						roomWidget = '<div class="panel ' + panelClass + '"><div class="panel-heading" id="title-info"></div><table class="table" id="room-info"></table></div>';
 						$("#col-" + col).append(roomWidget);
@@ -528,35 +524,28 @@ function createRooms() {
 				}
 			}
 			// for the others show only none hidden rooms
-			//if (room.Name.substring(0, 1) != "$" ) {
-			if (room.Name.substring(0, 4) != "$fr-" ) {
+			if (room.Name.substring(0, 1) != "$" ) {
 				roomWidget = '<div class="panel panel ' + panelClass + '"><div class="panel-heading"><b>' + room.Name + '</b></div><table class="table" id="room-' + room.idx + '"></table></div>';
 				$("#col-" + col).append(roomWidget);
 				col++;
 				if (col == 4) {
 					col = 1;
 				}
-			}
-			var url1 = localStorage.domoticzUrl + '/json.htm?type=command&param=getplandevices&idx=' + room.idx;
-			var url2 = localStorage.domoticzUrl + '/json.htm?type=devices&filter=all&used=true&order=Name&plan=' + room.idx;
-			var data2
-			$.getJSON(url2, function(data2) {
-				$.getJSON(url1, function(data1) {
-					if ( typeof data1.result != "undefined" ) {
+				var url1 = localStorage.domoticzUrl + '/json.htm?type=command&param=getplandevices&idx=' + room.idx;
+				var url2 = localStorage.domoticzUrl + '/json.htm?type=devices&filter=all&used=true&order=Name&plan=' + room.idx;
+				var data2
+				$.getJSON(url2, function(data2) {
+					$.getJSON(url1, function(data1) {
 						data1.result.forEach(function(device1) {
 							data2.result.forEach(function(device2) {
 								if (device1.Name == device2.Name || device1.Name == "[Scene] " + device2.Name) {
-									if (room.Name.substring(0, 4) == "$fr-" ) {
-										console.log("##### " + device2.Name + "  room:" + room.Name)
-									}
 									createWidget(device2);
 								}
 							});
 						});
-					}
+					});
 				});
-			});
-			//}
+			}
 		});
 	});
 	setInterval(fullPagerefresh, 60 * 60 * 1000);
@@ -838,7 +827,7 @@ function domoticzAddRoom(newroom) {
 	$.getJSON(url, function(data) {
 		data.result.forEach(function(room) {
 			if (room.Name.substring(0, 4) == "$fr-" ) {
-				console.log("name: " + room.Name + " check met" + "$fr-" + newroom)
+				//console.log("name: " + room.Name + " == " + "$fr-" + newroom)
 				if ( room.Name == "$fr-" + newroom ) {
 					alreadyexists = true;
 					console.log("name: " + room.Name + " bestaat al!" )
@@ -869,7 +858,7 @@ $(document).ready(function() {
 		loadsettingsfromdomoticz(1)
 	}
 	// testing checking adding rooms
-	initializeDomoticzRooms()
+	//initializeDomoticzRooms()
 
 	readHardware();
 	createRooms();
