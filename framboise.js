@@ -483,25 +483,28 @@ function createRooms() {
 					//console.log ("logic for CameraWidget - new")
 					//create first
 					//console.log("### RoomWidget CamTitles:" + "title-" + camidx)
-					roomWidget = '<div class="panel ' + panelClass + '"><div class="panel-heading" id="title-' + camidx + '"><i class="fa fa-camera fa-lg" aria-hidden="true"></i><b></b></div><table class="table" id="room-' + room.idx + '"></table></div>';
-					$("#col-" + col).append(roomWidget);
-					widget = '<tr><td  colspan="2"><img id="snapshot-' + camidx + '" width="100%"></img></td></tr>';
-					$("#room-" + room.idx).append(widget);
-					col++;
-					if (col == 4) {
-						col = 1;
-					}
-					//add camera stuff later
-					var url = localStorage.domoticzUrl + '/json.htm?type=cameras';
-						$.getJSON(url, function(data) {
-							data.result.forEach(function(cam) {
-								$("#title-"+cam.idx).text(cam.Name)
-								//console.log("!!!CamTitles:" + "#title-"+cam.idx+"="+ cam.Name)
+					console.log("### RoomWidget Cam:" + localStorage.getItem(camname))
+					if ( localStorage.getItem(camname) >= 1 ) {
+						roomWidget = '<div class="panel ' + panelClass + '"><div class="panel-heading" id="title-' + camidx + '"><i class="fa fa-camera fa-lg" aria-hidden="true"></i><b></b></div><table class="table" id="room-' + room.idx + '"></table></div>';
+						$("#col-" + col).append(roomWidget);
+						widget = '<tr><td  colspan="2"><img id="snapshot-' + camidx + '" width="100%"></img></td></tr>';
+						$("#room-" + room.idx).append(widget);
+						col++;
+						if (col == 4) {
+							col = 1;
+						}
+						//add camera stuff later
+						var url = localStorage.domoticzUrl + '/json.htm?type=cameras';
+							$.getJSON(url, function(data) {
+								data.result.forEach(function(cam) {
+									$("#title-"+cam.idx).text(cam.Name)
+									//console.log("!!!CamTitles:" + "#title-"+cam.idx+"="+ cam.Name)
+								})
 							})
-						})
-					//start your engines
-					updateCams();
-					setInterval(updateCams, 10000);
+						//start your engines
+						updateCams();
+						setInterval(updateCams, 10000);
+					}
 					break;
 				case "infoWidget":
 					//console.log ("logic for infoWidget")
