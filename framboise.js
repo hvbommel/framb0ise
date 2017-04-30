@@ -451,19 +451,18 @@ function createRooms() {
 				case "darkskyWidget":
 					//console.log ("logic for darkskyWidget")
 					if (localStorage.darkskyWidget == 1) {
-						roomWidget = '<div class="panel ' + panelClass + '"><div id="title-darksky" class="panel-heading"></div><table class="table" id="room-darksky"></table></div>';
+						roomWidget = '<div class="panel ' + panelClass + '"><div id="title-darksky" class="panel-heading"></div><table class="table" id="room-' + room.idx + '"></table></div>';
 						$("#col-" + col).append(roomWidget);
 						widget = '<tr><td class="data" id="td-darksky-icon" colspan="2" align="center"></td></tr>';
 						widget = widget + '<tr><td class="device" id="td-darksky-preciptype"></td><td class="data" id="td-darksky-precipprobability"></td></tr>';
 						widget = widget + '<tr><td class="device"><i class="fa fa-flag fa-lg" aria-hidden="true"></i></td><td class="data" id="td-darksky-wind"></td></tr>';
-						$("#room-darksky").append(widget);
+						$("#room-" + room.idx).append(widget);
 						col++;
 						if (col == 4) {
 							col = 1;
 						}
 						updateDarkSky();
 						setInterval(updateDarkSky, 300000);
-						localStorage.setItem("room-"+room.idx, "room-darksky")
 						AddDevices(room)
 					}
 					break;
@@ -513,20 +512,19 @@ function createRooms() {
 				case "infoWidget":
 					//console.log ("logic for infoWidget")
 					if (localStorage.infoWidget == 1) {
-						roomWidget = '<div class="panel ' + panelClass + '"><div class="panel-heading" id="title-info"></div><table class="table" id="room-info"></table></div>';
+						roomWidget = '<div class="panel ' + panelClass + '"><div class="panel-heading" id="title-info"></div><table class="table" id="room-'+room.idx+'"></table></div>';
 						$("#col-" + col).append(roomWidget);
 						widget = '<tr><td class="time" id="time" colspan="2"></td></tr>';
 						widget = widget + '<tr><td class="data" id="date" colspan="2"></td></tr>';
 						widget = widget + '<tr><td class="device"><i class="fa fa-sun-o fa-lg" aria-hidden="true"></i></td><<td class="data" id="sunrise"></td>/tr>';
 						widget = widget + '<tr><td class="device"><i class="fa fa-moon-o fa-lg" aria-hidden="true"></i></td><<td class="data" id="sunset"></td>/tr>';
-						$("#room-info").append(widget);
+						$("#room-"+room.idx).append(widget);
 						col++;
 						if (col == 4) {
 							col = 1;
 						}
 						updateTimeDate();
 						setInterval(updateTimeDate, 10000);
-						localStorage.setItem("room-"+room.idx, "room-info")
 						AddDevices(room)
 					}
 					break;
