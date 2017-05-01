@@ -452,7 +452,7 @@ function createRooms() {
 		updateDarkSky();
 		setInterval(updateDarkSky, 300000);
 	}
-	if (localStorage.anwbWidget == 1) {
+	if (localStorage.rssWidget == 1) {
 		if (!localStorage.rssUrl) {
 			localStorage.rssUrl = 'http://www.nu.nl/rss/Algemeen';
 		}
