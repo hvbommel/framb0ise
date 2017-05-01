@@ -449,6 +449,7 @@ function createRooms() {
 						localStorage.setItem("room-"+room.idx, "room-rss")
 						AddDevices(room)
 					}
+					break;
 				case "buienradarWidget":
 					//console.log ("logic for buienradarWidget")
 					if (localStorage.buienradarWidget == 1) {
