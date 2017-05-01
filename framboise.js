@@ -433,6 +433,22 @@ function createRooms() {
 						AddDevices(room)
 					}
 					break;
+				case "rssWidget":
+					if (localStorage.rssWidget == 1) {
+						if (!localStorage.rssUrl) {
+							localStorage.rssUrl = 'http://www.nu.nl/rss/Algemeen';
+						}
+						roomWidget = '<div class="panel ' + panelClass + '"><div class="panel-heading" id="title-rss"><i class="fa fa-newspaper-o fa-lg" aria-hidden="true"></i></div><table class="table" id="room-rss"></table></div>';
+						$("#col-" + col).append(roomWidget);
+						col++;
+						if (col == 4) {
+							col = 1;
+						}
+						updateRss();
+						setInterval(updateRss, 300000);
+						localStorage.setItem("room-"+room.idx, "room-rss")
+						AddDevices(room)
+					}
 				case "buienradarWidget":
 					//console.log ("logic for buienradarWidget")
 					if (localStorage.buienradarWidget == 1) {
