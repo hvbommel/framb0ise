@@ -707,6 +707,22 @@ function styleWidget(device) {
 			}
 			$('#td-' + device.PlanID + "-" + device.idx).html('<span class="' + motionClass + '"></span>');
 			break;
+		case "Selector":
+			var selections  = device.LevelNames.split('|', 4);
+			switchbtn = 'btn-sm btn-primary';
+			switchbtna = 'btn-sm btn-success active';
+			buttons = '';
+			for (btext in selections) {
+				perc = btext * 10;
+				if ( perc == device.LevelInt) {
+					buttons = buttons + '<button type="button" class="' + switchbtna + '" Onclick="setDimmer(' + device.idx + ',' + perc + ')">' + selections[btext] + '</button>'
+				} else {
+					buttons = buttons + '<button type="button" class="' + switchbtn + '" Onclick="setDimmer(' + device.idx + ',' + perc + ')">' + selections[btext] + '</button>'
+				}
+				console.log(selections[btext] + " - " + btext + " - " + perc)
+			}
+			$('#td-' + device.PlanID + "-" + device.idx).html('<div class="btn-group-lg">' + buttons + '</div>');
+			break;
 	}
 	switch (device.Type) {
 		case "Group":
