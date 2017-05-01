@@ -708,7 +708,7 @@ function styleWidget(device) {
 			$('#td-' + device.PlanID + "-" + device.idx).html('<span class="' + motionClass + '"></span>');
 			break;
 		case "Selector":
-			var selections = device.LevelNames.split('|', 4);
+			var selections = device.LevelNames.split('|', 10);
 			var switchbtn = 'btn-sm btn-primary';
 			var switchbtna = 'btn-sm btn-success active';
 			buttons = '';
