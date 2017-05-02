@@ -103,6 +103,9 @@ function saveSettings() {
 	var jsonvar = "";
 	var domoticzUrl = $("#domoticzUrl").val();
 	jsonvar = saveSettingVar('domoticzUrl', domoticzUrl, jsonvar)
+
+	initializeDomoticzRooms()
+
 	var icsUrl = $("#icsUrl").val();
 	jsonvar = saveSettingVar('icsUrl', icsUrl, jsonvar)
 	var rssUrl = $("#rssUrl").val();
@@ -863,6 +866,7 @@ function loadsettingsfromdomoticz() {
 }
 
 function domoticzAddRoom(newroom) {
+	$.ajaxSetup( { "async": false } );
 	var url = localStorage.domoticzUrl + "/json.htm?type=plans&displayhidden=1";
 	var alreadyexists = false;
 	$.getJSON(url, function(data) {
@@ -878,6 +882,7 @@ function domoticzAddRoom(newroom) {
 			$.getJSON(url, function(data) {});
 		}
 	});
+	$.ajaxSetup( { "async": true } );
 }
 
 function initializeDomoticzRooms() {
@@ -887,13 +892,13 @@ function initializeDomoticzRooms() {
 	domoticzAddRoom("icsWidget")
 	domoticzAddRoom("cameraWidget")
 	domoticzAddRoom("infoWidget")
+	domoticzAddRoom("cssWidget")
 }
 
 $(document).ready(function() {
 	if (!localStorage.domoticzUrl || localStorage.domoticzUrl == 'undefined') {
 		loadsettingsfromdomoticz(1)
 	}
-	initializeDomoticzRooms()
 
 	readHardware();
 	createRooms();
