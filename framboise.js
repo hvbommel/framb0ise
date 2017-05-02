@@ -722,7 +722,6 @@ function styleWidget(device) {
 				} else {
 					buttons = buttons + '<button type="button" class="' + switchbtn + '" Onclick="setDimmer(' + device.idx + ',' + perc + ')">' + selections[btext] + '</button>'
 				}
-				console.log(selections[btext] + " - " + btext + " - " + perc)
 			}
 			$('#td-' + device.PlanID + "-" + device.idx).html('<div class="btn-group-lg">' + buttons + '</div>');
 			break;
@@ -866,7 +865,7 @@ function loadsettingsfromdomoticz() {
 }
 
 function domoticzAddRoom(newroom) {
-	$.ajaxSetup( { "async": false } );
+	$.ajaxSetup({ "async": false });
 	var url = localStorage.domoticzUrl + "/json.htm?type=plans&displayhidden=1";
 	var alreadyexists = false;
 	$.getJSON(url, function(data) {
@@ -882,7 +881,7 @@ function domoticzAddRoom(newroom) {
 			$.getJSON(url, function(data) {});
 		}
 	});
-	$.ajaxSetup( { "async": true } );
+	$.ajaxSetup({ "async": true });
 }
 
 function initializeDomoticzRooms() {
