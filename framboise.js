@@ -194,7 +194,7 @@ function updateBuienradar() {
 				}
 			})
 			if (rainArray.length > 1) {
-				$("#title-buienradar").html('<b><i class="fa fa-umbrella fa-lg" aria-hidden="true"></i> rain from ' + rainArray[0] + ' to ' + rainArray[rainArray.length - 1]).css('color', 'orange');
+				$("#title-buienradar").html('<b><i class="fa fa-umbrella fa-lg" aria-hidden="true"></i> rain from ' + rainArray[0] + ' to ' + rainArray[rainArray.length - 2]).css('color', 'orange');
 			} else {
 				$("#title-buienradar").html('<b><i class="fa fa-umbrella fa-lg" aria-hidden="true"></i>');
 			}
