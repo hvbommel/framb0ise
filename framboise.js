@@ -178,7 +178,7 @@ function updateANWB() {
 				});
 			}
 		});
-		if ( widget == "" ) {
+		if (widget == "") {
 			widget = '<tr><td>No traffic jams</td><td></td></tr>';
 			$("#td-trafficjams").empty().append(widget);
 		} else {
@@ -518,7 +518,6 @@ function createRooms() {
 							$("#room-" + room.idx).append(widget);
 							updateIcs();
 							setInterval(updateIcs, 60 * 60 * 1000);
-							localStorage.setItem("room-" + room.idx, "room-ics")
 							AddDevices(room)
 						}
 						break;
