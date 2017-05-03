@@ -392,20 +392,26 @@ function switchLight(idx, action) {
 }
 
 function checkWidgets() {
-	var url = localStorage.domoticzUrl + "/json.htm?type=devices&filter=all&used=true&order=Name&lastupdate=" + LastUpdateTime;
-	$.getJSON(url, function (data) {
-		if (data.result) {
-			LastUpdateTime = parseInt(data.ActTime);
-			data.result.forEach(function (device) {
-				updateWidget(device);
+	var urlr = localStorage.domoticzUrl + "/json.htm?type=plans&displayhidden=1";
+	$.getJSON(urlr, function (data) {
+		data.result.forEach(function (room) {
+			var urld = localStorage.domoticzUrl + '/json.htm?type=devices&filter=all&used=true&order=Name&plan=' + room.idx;
+			var datad
+			$.getJSON(urld, function (datad) {
+				if (typeof (datad.result) != "undefined") {
+					datad.result.forEach(function (device) {
+						updateWidget(device);
+					});
+				}
 			});
-		}
+		});
 	});
+
 }
 checkLoop = setInterval(checkWidgets, 10000);
 
 function updateWidget(device) {
-	$('#td-' + device.idx).html(device.Data);
+	$('#td-' + device.PlanID + "-" + device.idx).html(device.Data);
 	styleWidget(device);
 }
 
