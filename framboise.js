@@ -3,18 +3,18 @@ var checkLoop;
 
 function updateCams() {
 	var url = localStorage.domoticzUrl + '/json.htm?type=cameras';
-	$.getJSON(url, function(data) {
-		data.result.forEach(function(cam) {
-			$.each(localStorage, function(key, value) {
+	$.getJSON(url, function (data) {
+		data.result.forEach(function (cam) {
+			$.each(localStorage, function (key, value) {
 				if (~key.indexOf("cam")) {
 					if (value == cam.idx) {
 						var url = 'http://' + cam.Username + ':' + cam.Password + '@' + cam.Address + ':' + cam.Port + '/' + cam.ImageURL
-						$('#snapshot-' + cam.idx).attr('src', url).on('load', function() {
-							$("#title-" + cam.idx).text(cam.Name)
-							$('#snapshot-' + cam.idx).show();
+						$('#snapshot-' + cam.idx).attr('src', url).on('load', function () {
+								$("#title-" + cam.idx).text(cam.Name)
+								$('#snapshot-' + cam.idx).show();
 							})
-						.on('error', function() {
-							$("#title-" + cam.idx).text(cam.Name + " - unreachable!")
+							.on('error', function () {
+								$("#title-" + cam.idx).text(cam.Name + " - unreachable!")
 							});
 					}
 				}
@@ -37,10 +37,10 @@ function updateRss() {
 function updateIcs() {
 	$("#room-ics").empty();
 	var icsUrl = 'https://crossorigin.me/' + localStorage.getItem('icsUrl');
-	new ical_parser(icsUrl, function(cal) {
+	new ical_parser(icsUrl, function (cal) {
 		var events = cal.getFutureEvents();
 		var counter = 0;
-		events.forEach(function(event) {
+		events.forEach(function (event) {
 			if (counter < 5) {
 				var date = event.start_date;
 				date = date.replace(/\//g, "-")
@@ -61,8 +61,8 @@ function readCams() {
 	$("#domoCams").empty();
 	var url = localStorage.domoticzUrl + '/json.htm?type=cameras';
 	var domoCam;
-	$.getJSON(url, function(data) {
-		data.result.forEach(function(cam) {
+	$.getJSON(url, function (data) {
+		data.result.forEach(function (cam) {
 			domoCam = '<div class="checkbox"><label><input class="activeCam" type="checkbox" id="cam-' + cam.idx + '" value="' + cam.idx + '"> ' + cam.Name + '</label></div>';
 			$("#domoCams").append(domoCam);
 		})
@@ -73,7 +73,6 @@ function editSettings() {
 	var icsUrl = localStorage.getItem('icsUrl');
 	$("#icsUrl").val(icsUrl);
 	var domoticzUrl = localStorage.getItem('domoticzUrl');
-	var domoticzUrl = localStorage.getItem('domoticzUrl');
 	if (domoticzUrl == "") {
 		var domoticzUrl = $(location).attr('protocol') + "//" + $(location).attr('host');
 	}
@@ -82,7 +81,7 @@ function editSettings() {
 	$("#rssUrl").val(rssUrl);
 	var panelClass = localStorage.getItem('panelClass');
 	$("#panelClass").val(panelClass);
-	$('input[type=radio]').each(function() {
+	$('input[type=radio]').each(function () {
 		for (var i = 0, len = localStorage.length; i < len; i++) {
 			var key = localStorage.key(i);
 			var value = localStorage[key];
@@ -91,7 +90,7 @@ function editSettings() {
 			}
 		}
 	});
-	$('input:checkbox').each(function() {
+	$('input:checkbox').each(function () {
 		for (var i = 0, len = localStorage.length; i < len; i++) {
 			var key = localStorage.key(i);
 			var value = localStorage[key];
@@ -104,7 +103,9 @@ function editSettings() {
 }
 
 function saveSettings() {
-	$.ajaxSetup({ "async": false });
+	$.ajaxSetup({
+		"async": false
+	});
 	var jsonvar = "";
 	var jsonvar2 = "";
 	var jsonvar3 = "";
@@ -119,7 +120,7 @@ function saveSettings() {
 	jsonvar3 = saveSettingVar('rssUrl', rssUrl, jsonvar3);
 	var panelClass = $("#panelClass").val();
 	jsonvar4 = saveSettingVar('panelClass', panelClass, jsonvar4);
-	$('input[type=radio]').each(function() {
+	$('input[type=radio]').each(function () {
 		var RadioId = $(this).attr('id');
 		if ($(this).is(":checked")) {
 			localStorage.setItem(RadioId, 1);
@@ -127,7 +128,7 @@ function saveSettings() {
 			localStorage.removeItem(RadioId);
 		}
 	});
-	$('input:checkbox').each(function() {
+	$('input:checkbox').each(function () {
 		var checkboxId = $(this).attr('id');
 		if ($(this).is(":checked")) {
 			value = $(this).val();
@@ -141,18 +142,20 @@ function saveSettings() {
 			localStorage.removeItem(checkboxId);
 		}
 	});
-	savetodomoticzuservar("framb0ise",jsonvar)
-	savetodomoticzuservar("framb0ise2",jsonvar2)
-	savetodomoticzuservar("framb0ise3",jsonvar3)
-	savetodomoticzuservar("framb0ise4",jsonvar4)
-	$.ajaxSetup({ "async": true });
+	savetodomoticzuservar("framb0ise", jsonvar)
+	savetodomoticzuservar("framb0ise2", jsonvar2)
+	savetodomoticzuservar("framb0ise3", jsonvar3)
+	savetodomoticzuservar("framb0ise4", jsonvar4)
+	$.ajaxSetup({
+		"async": true
+	});
 	location.reload();
 }
 
-function savetodomoticzuservar(uservar,text) {
+function savetodomoticzuservar(uservar, text) {
 	if (localStorage.inlineRadio2 == 1) {
 		var url = localStorage.domoticzUrl + '/json.htm?type=command&param=updateuservariable&vname=' + uservar + '&vtype=2&vvalue={' + text + '}';
-		$.getJSON(url, function(data) {});
+		$.getJSON(url, function (data) {});
 	}
 }
 
@@ -167,10 +170,10 @@ function saveSettingVar(name, val, jsoninp) {
 function updateANWB() {
 	var widget;
 	var url = 'https://cors.5apps.com/?uri=https://www.anwb.nl/feeds/gethf';
-	$.getJSON(url, function(data) {
-		data.roadEntries.forEach(function(road) {
+	$.getJSON(url, function (data) {
+		data.roadEntries.forEach(function (road) {
 			if (road.events.trafficJams.length != 0) {
-				road.events.trafficJams.forEach(function(jam) {
+				road.events.trafficJams.forEach(function (jam) {
 					widget = widget + '<tr><td>' + road.road + '</td><td>' + jam.from + ' -> ' + jam.to + '</td></tr>';
 				});
 			}
@@ -197,39 +200,39 @@ function updateANWB() {
 function updateBuienradar() {
 	var rainArray = [];
 	var url = localStorage.domoticzUrl + '/json.htm?type=settings';
-	$.getJSON(url, function(data) {
+	$.getJSON(url, function (data) {
 		var latitude = data.Location.Latitude;
 		var longitude = data.Location.Longitude;
 		var url = 'https://crossorigin.me/https://gpsgadget.buienradar.nl/data/raintext?lat=' + latitude + '&lon=' + longitude;
-		$.get(url, function(data) {
+		$.get(url, function (data) {
 			var rainData = data.split("\n");
-			rainData.forEach(function(data) {
-				if (data.substring(0, 3) != "000") {
+			rainData.forEach(function (data) {
+				if (data != "" && data.substring(0, 3) != "000") {
 					rainArray.push(data.substring(4, 9))
 				}
 			})
-			if (rainArray.length > 1) {
-				$("#title-buienradar").html('<b><i class="fa fa-umbrella fa-lg" aria-hidden="true"></i> rain from ' + rainArray[0] + ' to ' + rainArray[rainArray.length - 2]).css('color', 'orange');
+			if (rainArray.length > 0) {
+				$("#title-buienradar").html('<b><i class="fa fa-umbrella fa-lg" aria-hidden="true"></i> rain from ' + rainArray[0] + ' to ' + rainArray[rainArray.length - 1]).css('color', 'orange');
 			} else {
 				$("#title-buienradar").html('<b><i class="fa fa-umbrella fa-lg" aria-hidden="true"></i>');
 			}
 		});
 	})
 	$("#room-buienrader").empty();
-	var widget = '<tr><td colspan="2"><img src="https://api.buienradar.nl/image/1.0/RadarMapNL?w=256&h=256" width=100%></td></tr>';
+	var widget = '<tr><td colspan="2"><img src="https://api.buienradar.nl/image/1.0/RadarMapNL?w=256&h=256&' + new Date().getTime() + '" width=100%></td></tr>';
 	$("#room-buienrader").append(widget);
 }
 
 function setDimmer(idx, value) {
 	var url = localStorage.domoticzUrl + '/json.htm?type=command&param=switchlight&idx=' + idx + '&switchcmd=Set%20Level&level=' + value;
-	$.get(url, function(data) {
+	$.get(url, function (data) {
 		checkWidgets();
 	});
 }
 
 function readSettings(settings) {
 	var url = localStorage.domoticzUrl + '/json.htm?type=settings';
-	$.getJSON(url, function(data) {});
+	$.getJSON(url, function (data) {});
 }
 
 function upSetpoint(idx) {
@@ -253,15 +256,15 @@ function downSetpoint(idx) {
 function setSetpoint(idx) {
 	var setPoint = $("#setpoint-" + idx).val();
 	var url = localStorage.domoticzUrl + '/json.htm?type=command&param=setsetpoint&idx=' + idx + '&setpoint=' + setPoint;
-	$.getJSON(url, function(data) {});
+	$.getJSON(url, function (data) {});
 	checkLoop = setInterval(checkWidgets, domoConfig.updateInterval);
 }
 
 function readHardware() {
 	var url = localStorage.domoticzUrl + '/json.htm?type=hardware';
-	$.getJSON(url, function(data) {
+	$.getJSON(url, function (data) {
 		if (data.result) {
-			data.result.forEach(function(device) {
+			data.result.forEach(function (device) {
 				switch (device.Type) {
 					case 25:
 						localStorage.setItem('DarkSkyUsername', device.Username);
@@ -275,7 +278,7 @@ function readHardware() {
 
 function updateDarkSky() {
 	url = 'https://cors.5apps.com/?uri=https://api.darksky.net/forecast/' + localStorage.DarkSkyUsername + '/' + localStorage.DarkSkyPassword + '?units=ca';
-	$.get(url, function(data) {
+	$.get(url, function (data) {
 		if (data.currently) {
 			var skycons = new Skycons({
 				"color": "black"
@@ -326,7 +329,7 @@ function updateDarkSky() {
 			temperature = parseFloat(temperature);
 			temperature = temperature.toFixed(1);
 			var weatherReport = '<table>';
-			data.daily.data.forEach(function(report) {
+			data.daily.data.forEach(function (report) {
 				var weekDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 				var date = new Date(report.time * 1000);
 				var weekday = weekDays[date.getDay()];
@@ -364,7 +367,7 @@ function updateTimeDate() {
 	$("#time").html(time).css("font-size", "40px");
 	$("#title-info").html('<b><i class="fa fa-clock-o fa-lg" aria-hidden="true"></i> ' + date + '</b>');
 	var url = localStorage.domoticzUrl + '/json.htm?type=command&param=getSunRiseSet';
-	$.getJSON(url, function(data) {
+	$.getJSON(url, function (data) {
 		var sunRise = data.Sunrise;
 		var sunSet = data.Sunset;
 		$("#sunrise").html(sunRise);
@@ -375,7 +378,7 @@ function updateTimeDate() {
 function switchScene(idx, action) {
 	action = action || "On";
 	var url = localStorage.domoticzUrl + '/json.htm?type=command&param=switchscene&idx=' + idx + '&switchcmd=' + action;
-	$.getJSON(url, function(data) {
+	$.getJSON(url, function (data) {
 		checkWidgets();
 	});
 }
@@ -383,17 +386,17 @@ function switchScene(idx, action) {
 function switchLight(idx, action) {
 	action = action || "Toggle";
 	var url = localStorage.domoticzUrl + '/json.htm?type=command&param=switchlight&idx=' + idx + '&switchcmd=' + action;
-	$.getJSON(url, function(data) {
+	$.getJSON(url, function (data) {
 		checkWidgets();
 	});
 }
 
 function checkWidgets() {
 	var url = localStorage.domoticzUrl + "/json.htm?type=devices&filter=all&used=true&order=Name&lastupdate=" + LastUpdateTime;
-	$.getJSON(url, function(data) {
+	$.getJSON(url, function (data) {
 		if (data.result) {
 			LastUpdateTime = parseInt(data.ActTime);
-			data.result.forEach(function(device) {
+			data.result.forEach(function (device) {
 				updateWidget(device);
 			});
 		}
@@ -416,8 +419,8 @@ function createRooms() {
 	var panelClass = localStorage.panelClass;
 	var url = localStorage.domoticzUrl + "/json.htm?type=plans&displayhidden=1";
 
-	$.getJSON(url, function(data) {
-		data.result.forEach(function(room) {
+	$.getJSON(url, function (data) {
+		data.result.forEach(function (room) {
 			if (room.Name.substring(0, 4) == "$fr-") {
 				var fixedroom = room.Name.substring(4);
 				var camname = "";
@@ -469,7 +472,7 @@ function createRooms() {
 								col = 1;
 							}
 							updateBuienradar();
-							setInterval(updateBuienradar, 1800000);
+							setInterval(updateBuienradar, 600000);
 							localStorage.setItem("room-" + room.idx, "room-buienrader")
 							AddDevices(room)
 						}
@@ -516,8 +519,8 @@ function createRooms() {
 								col = 1;
 							}
 							var url = localStorage.domoticzUrl + '/json.htm?type=cameras';
-							$.getJSON(url, function(data) {
-								data.result.forEach(function(cam) {
+							$.getJSON(url, function (data) {
+								data.result.forEach(function (cam) {
 									$("#title-" + cam.idx).text(cam.Name)
 								})
 							})
@@ -567,11 +570,11 @@ function AddDevices(room) {
 	var url1 = localStorage.domoticzUrl + '/json.htm?type=command&param=getplandevices&idx=' + room.idx;
 	var url2 = localStorage.domoticzUrl + '/json.htm?type=devices&filter=all&used=true&order=Name&plan=' + room.idx;
 	var data2
-	$.getJSON(url2, function(data2) {
-		$.getJSON(url1, function(data1) {
-			if (typeof(data1.result) != "undefined") {
-				data1.result.forEach(function(device1) {
-					data2.result.forEach(function(device2) {
+	$.getJSON(url2, function (data2) {
+		$.getJSON(url1, function (data1) {
+			if (typeof (data1.result) != "undefined") {
+				data1.result.forEach(function (device1) {
+					data2.result.forEach(function (device2) {
 						if (device1.devidx == device2.idx) {
 							if ((device2.Type == "Scene" || device2.Type == "Group") && device1.Name.substring(0, 7) == "[Scene]") {
 								createWidget(device2);
@@ -671,7 +674,7 @@ function styleWidget(device) {
 			$('#td-' + device.PlanID + "-" + device.idx).html('<div class="slider-div"><input type="text" id="slider-' + device.PlanID + "-" + device.idx + '" data-slider-value="' + device.LevelInt + '" data-slider-min="0" data-slider-max="' + device.MaxDimLevel + '" data-slider-tooltip="hide" />&nbsp;&nbsp;&nbsp;<button class="' + switchClass + '" Onclick="switchLight(' + device.idx +
 				')"></button></div>');
 			$("#slider-" + device.PlanID + "-" + device.idx).slider();
-			$("#slider-" + device.PlanID + "-" + device.idx).on("slideStop", function(slideEvt) {
+			$("#slider-" + device.PlanID + "-" + device.idx).on("slideStop", function (slideEvt) {
 				setDimmer(device.idx, slideEvt.value);
 			});
 			break;
@@ -700,7 +703,7 @@ function styleWidget(device) {
 			$('#td-' + device.PlanID + "-" + device.idx).html('<div class="slider-div"><input type="text" id="slider-' + device.PlanID + "-" + device.idx + '" data-slider-value="' + device.LevelInt + '" data-slider-min="0" data-slider-max="' + device.MaxDimLevel + '" data-slider-step="1" data-slider-tooltip="hide" />&nbsp;&nbsp;&nbsp;<button class="' + switchClass + '" Onclick="switchLight(' + device.idx +
 				')"></button></div>');
 			$("#slider-" + device.PlanID + "-" + device.idx).slider();
-			$("#slider-" + device.PlanID + "-" + device.idx).on("slideStop", function(slideEvt) {
+			$("#slider-" + device.PlanID + "-" + device.idx).on("slideStop", function (slideEvt) {
 				setDimmer(device.idx, slideEvt.value);
 			});
 			break;
@@ -713,7 +716,7 @@ function styleWidget(device) {
 			$('#td-' + device.PlanID + "-" + device.idx).html('<div class="slider-div"><input type="text" id="slider-' + device.PlanID + "-" + device.idx + '" data-slider-value="' + device.LevelInt + '" data-slider-min="0" data-slider-max="' + device.MaxDimLevel + '" data-slider-step="1" data-slider-tooltip="hide" />&nbsp;&nbsp;&nbsp;<button class="' + switchClass + '" Onclick="switchLight(' + device.idx +
 				')"></button></div>');
 			$("#slider-" + device.PlanID + "-" + device.idx).slider();
-			$("#slider-" + device.PlanID + "-" + device.idx).on("slideStop", function(slideEvt) {
+			$("#slider-" + device.PlanID + "-" + device.idx).on("slideStop", function (slideEvt) {
 				setDimmer(device.idx, slideEvt.value);
 			});
 			break;
@@ -856,9 +859,9 @@ function loadsettingsfromdomoticz() {
 	var found2 = 0;
 	var found3 = 0;
 	var found4 = 0;
-	$.getJSON(url, function(data) {
-		data.result.forEach(function(uservar) {
-			if (uservar.Name.substring(0,9) == "framb0ise") {
+	$.getJSON(url, function (data) {
+		data.result.forEach(function (uservar) {
+			if (uservar.Name.substring(0, 9) == "framb0ise") {
 				var url = localStorage.domoticzUrl + '/json.htm?type=command&param=getuservariable&idx=' + uservar.idx;
 				switch (uservar.Name) {
 					case "framb0ise":
@@ -874,9 +877,9 @@ function loadsettingsfromdomoticz() {
 						found4 = 1;
 						break;
 				}
-				$.getJSON(url, function(settings) {
+				$.getJSON(url, function (settings) {
 					var changes = 0;
-					settings.result.forEach(function(info) {
+					settings.result.forEach(function (info) {
 						var fields = JSON.parse(info["Value"]);
 						for (field in fields) {
 							if (localStorage.getItem(field) != fields[field]) {
@@ -893,29 +896,29 @@ function loadsettingsfromdomoticz() {
 		});
 		if (found == 0) {
 			var url = localStorage.domoticzUrl + '/json.htm?type=command&param=saveuservariable&vname=framb0ise&vtype=2&vvalue={"domoticzUrl":"' + $(location).attr('protocol') + "//" + $(location).attr('host') + '"}';
-			$.getJSON(url, function(data) {});
+			$.getJSON(url, function (data) {});
 		}
 		if (found2 == 0) {
 			var url = localStorage.domoticzUrl + '/json.htm?type=command&param=saveuservariable&vname=framb0ise2&vtype=2&vvalue={""}';
-			$.getJSON(url, function(data) {});
+			$.getJSON(url, function (data) {});
 		}
 		if (found3 == 0) {
 			var url = localStorage.domoticzUrl + '/json.htm?type=command&param=saveuservariable&vname=framb0ise3&vtype=2&vvalue={""}';
-			$.getJSON(url, function(data) {});
+			$.getJSON(url, function (data) {});
 		}
 		if (found4 == 0) {
 			var url = localStorage.domoticzUrl + '/json.htm?type=command&param=saveuservariable&vname=framb0ise4&vtype=2&vvalue={""}';
-			$.getJSON(url, function(data) {});
+			$.getJSON(url, function (data) {});
 		}
 	});
 }
 
 function domoticzAddRoom(newroom) {
-//	$.ajaxSetup({ "async": false });
+	//	$.ajaxSetup({ "async": false });
 	var url = localStorage.domoticzUrl + "/json.htm?type=plans&displayhidden=1";
 	var alreadyexists = false;
-	$.getJSON(url, function(data) {
-		data.result.forEach(function(room) {
+	$.getJSON(url, function (data) {
+		data.result.forEach(function (room) {
 			if (room.Name.substring(0, 4) == "$fr-") {
 				if (room.Name == "$fr-" + newroom) {
 					alreadyexists = true;
@@ -924,10 +927,10 @@ function domoticzAddRoom(newroom) {
 		});
 		if (!alreadyexists) {
 			var url = localStorage.domoticzUrl + "/json.htm?type=command&param=addplan&name=" + '$fr-' + newroom;
-			$.getJSON(url, function(data) {});
+			$.getJSON(url, function (data) {});
 		}
 	});
-//	$.ajaxSetup({ "async": true });
+	//	$.ajaxSetup({ "async": true });
 }
 
 function initializeDomoticzRooms() {
@@ -940,7 +943,7 @@ function initializeDomoticzRooms() {
 	domoticzAddRoom("cssWidget");
 }
 
-$(document).ready(function() {
+$(document).ready(function () {
 	if (!localStorage.domoticzUrl || localStorage.domoticzUrl == 'undefined') {
 		loadsettingsfromdomoticz();
 	}
