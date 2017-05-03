@@ -951,7 +951,6 @@ function initializeDomoticzRooms() {
 	domoticzAddRoom("buienradarWidget");
 	domoticzAddRoom("darkskyWidget");
 	domoticzAddRoom("icsWidget");
-	domoticzAddRoom("cameraWidget");
 	domoticzAddRoom("infoWidget");
 	domoticzAddRoom("rssWidget");
 }
