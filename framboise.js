@@ -183,10 +183,10 @@ function updateANWB() {
 		if (widget == "") {
 			widget = '<tr><td>No traffic jams</td><td></td></tr>';
 			$("#tx-traffic").empty().append(widget);
-			$("#tx-anwb.pagination-container").empty();
+			$(".pagination-container").remove();
 		} else {
 			$("#tx-traffic").empty().append(widget);
-			$("#tx-anwb.pagination-container").empty();
+			$(".pagination-container").remove();
 			$("#tx-anwb").paginathing({
 				perPage: 5,
 				prevNext: true,
