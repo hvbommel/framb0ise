@@ -517,7 +517,7 @@ function createRooms() {
 							if (col == 4) {
 								col = 1;
 							}
-							widget = '<tr><td colspan="2" id="tx-ics"></td></tr>';
+							widget = '<tr><td id="tx-ics"></td></tr>';
 							$("#room-" + room.idx).append(widget);
 							updateIcs();
 							setInterval(updateIcs, 60 * 60 * 1000);
