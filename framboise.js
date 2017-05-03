@@ -172,19 +172,22 @@ function updateANWB() {
 	var url = 'https://cors.5apps.com/?uri=https://www.anwb.nl/feeds/gethf';
 	$.getJSON(url, function (data) {
 		data.roadEntries.forEach(function (road) {
-			if (road.events.trafficJams.length != 0) {
+			if (road.events.trafficJams.length != 0 ) {
 				road.events.trafficJams.forEach(function (jam) {
-					widget = widget + '<tr><td>' + road.road + '</td><td>' + jam.from + ' -> ' + jam.to + '</td></tr>';
+					if ( typeof(jam.delay) != "undefined") {
+						widget = widget + '<tr><td>' + road.road + '(' + jam.delay/60 + 'min)</td><td>' + jam.from + ' -> ' + jam.to + '</td></tr>';
+					}
 				});
 			}
 		});
 		if (widget == "") {
 			widget = '<tr><td>No traffic jams</td><td></td></tr>';
-			$("#td-trafficjams").empty().append(widget);
+			$("#tx-traffic").empty().append(widget);
+			$("#tx-anwb.pagination-container").empty();
 		} else {
-			$("#td-trafficjams").empty().append(widget);
-			$(".pagination-container").empty();
-			$('#td-trafficjams').paginathing({
+			$("#tx-traffic").empty().append(widget);
+			$("#tx-anwb.pagination-container").empty();
+			$("#tx-anwb").paginathing({
 				perPage: 5,
 				prevNext: true,
 				firstLast: true,
@@ -449,7 +452,7 @@ function createRooms() {
 							if (col == 4) {
 								col = 1;
 							}
-							widget = '<tr><td class="device"></td><td class="data" id="td-trafficjams"></td></tr></table>';
+							widget = '<table class="table" id="tx-anwb"><tr><td colspan="2" id="tx-traffic"></td></tr></table>';
 							$("#room-" + room.idx).append(widget);
 							updateANWB();
 							setInterval(updateANWB, 300000);
@@ -607,10 +610,6 @@ function AddDevices(room) {
 function createWidget(device) {
 	var widget;
 	var roomname = "room-" + device.PlanID
-	if (localStorage.getItem(roomname) != null) {
-		roomname = localStorage.getItem(roomname);
-	}
-
 	if (device.Type == "Group") {
 		widget = '<tr><td class="device">' + device.Name + '</td><td class="data" id="ts-' + device.PlanID + "-" + device.idx + '">' + "scene" + '</td></tr>';
 		$("#" + roomname).append(widget);
@@ -857,6 +856,9 @@ function styleWidget(device) {
 			percentage = device.Data.replace("%", "");
 			percentage = parseInt(percentage).toFixed(0);
 			$("#td-" + device.PlanID + "-" + device.idx).html('<div class="progress"><div class="progress-bar" role="progressbar" aria-valuenow="' + percentage + '" aria-valuemin="0" aria-valuemax="100" style="min-width: 3em; width:' + percentage + '%";>' + percentage + "%" + '</div></div>');
+			break;
+		case "kWh" :
+			$('#td-' + device.PlanID + "-" + device.idx).html(device.Usage + ' (' + device.CounterToday + ')');
 			break;
 	}
 }
