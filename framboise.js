@@ -953,7 +953,7 @@ function initializeDomoticzRooms() {
 	domoticzAddRoom("icsWidget");
 	domoticzAddRoom("cameraWidget");
 	domoticzAddRoom("infoWidget");
-	domoticzAddRoom("cssWidget");
+	domoticzAddRoom("rssWidget");
 }
 
 $(document).ready(function () {
