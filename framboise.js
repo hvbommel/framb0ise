@@ -24,9 +24,9 @@ function updateCams() {
 }
 
 function updateRss() {
-	$("#room-rss").empty();
+	$("#tx-rss").empty();
 	var rssUrl = localStorage.getItem('rssUrl');
-	$("#room-rss").rss(rssUrl, {
+	$("#tx-rss").rss(rssUrl, {
 		ssl: true,
 		limit: 5,
 		layoutTemplate: '{entries}',
@@ -35,21 +35,21 @@ function updateRss() {
 }
 
 function updateIcs() {
-	$("#room-ics").empty();
 	var icsUrl = 'https://crossorigin.me/' + localStorage.getItem('icsUrl');
 	new ical_parser(icsUrl, function (cal) {
 		var events = cal.getFutureEvents();
 		var counter = 0;
+		var widget = "";
 		events.forEach(function (event) {
 			if (counter < 5) {
 				var date = event.start_date;
 				date = date.replace(/\//g, "-")
 				var time = event.start_time;
-				var widget = '<tr><td class="device">' + date + ' ' + time + '</td><td class="data">' + event.SUMMARY + '</td></tr>'
-				$("#room-ics").append(widget);
+				widget = widget + '<tr><td class="device">' + date + ' ' + time + '</td><td class="data">' + event.SUMMARY + '</td></tr>'
 			}
 			counter++;
 		});
+		$("#tx-ics").html(widget);
 	});
 }
 
@@ -168,7 +168,7 @@ function saveSettingVar(name, val, jsoninp) {
 }
 
 function updateANWB() {
-	var widget;
+	var widget = "";
 	var url = 'https://cors.5apps.com/?uri=https://www.anwb.nl/feeds/gethf';
 	$.getJSON(url, function (data) {
 		data.roadEntries.forEach(function (road) {
@@ -178,26 +178,34 @@ function updateANWB() {
 				});
 			}
 		});
-		$("#room-anwb").empty().append(widget);
-		$(".pagination-container").empty();
-		$('#room-anwb').paginathing({
-			perPage: 5,
-			prevNext: true,
-			firstLast: true,
-			prevText: '&laquo;',
-			nextText: '&raquo;',
-			firstText: 'First',
-			lastText: 'Last',
-			containerClass: 'pagination-container',
-			ulClass: 'pagination',
-			liClass: 'page',
-			activeClass: 'active',
-			disabledClass: 'disable'
-		});
+		if ( widget == "" ) {
+			widget = '<tr><td>No traffic jams</td><td></td></tr>';
+			$("#td-trafficjams").empty().append(widget);
+		} else {
+			$("#td-trafficjams").empty().append(widget);
+			$(".pagination-container").empty();
+			$('#td-trafficjams').paginathing({
+				perPage: 5,
+				prevNext: true,
+				firstLast: true,
+				prevText: '&laquo;',
+				nextText: '&raquo;',
+				firstText: 'First',
+				lastText: 'Last',
+				containerClass: 'pagination-container',
+				ulClass: 'pagination',
+				liClass: 'page',
+				activeClass: 'active',
+				disabledClass: 'disable'
+			});
+		}
 	});
 }
 
 function updateBuienradar() {
+	var widget = '<img src="https://api.buienradar.nl/image/1.0/RadarMapNL?w=256&h=256&' + new Date().getTime() + '"  width=100%>';
+	$("#tx-buienradar").html(widget);
+
 	var rainArray = [];
 	var url = localStorage.domoticzUrl + '/json.htm?type=settings';
 	$.getJSON(url, function (data) {
@@ -218,9 +226,6 @@ function updateBuienradar() {
 			}
 		});
 	})
-	$("#room-buienrader").empty();
-	var widget = '<tr><td colspan="2"><img src="https://api.buienradar.nl/image/1.0/RadarMapNL?w=256&h=256&' + new Date().getTime() + '" width=100%></td></tr>';
-	$("#room-buienrader").append(widget);
 }
 
 function setDimmer(idx, value) {
@@ -438,17 +443,16 @@ function createRooms() {
 				switch (fixedroom) {
 					case "anwbWidget":
 						if (localStorage.anwbWidget == 1) {
-							roomWidget = '<div class="panel ' + panelClass + '"><div class="panel-heading"><b><i class="fa fa-car fa-lg" aria-hidden="true"></i></b></div><table class="table" id="room-anwb"></table></div>';
+							roomWidget = '<div class="panel ' + panelClass + '"><div class="panel-heading"><b><i class="fa fa-car fa-lg" aria-hidden="true"></i></b></div><table class="table" id="room-' + room.idx + '"></table></div>';
 							$("#col-" + col).append(roomWidget);
-							widget = '<tr><td class="device"></td><td class="data" id="td-trafficjams"></td></tr></table>';
-							$("#room-anwb").append(widget);
 							col++;
 							if (col == 4) {
 								col = 1;
 							}
+							widget = '<tr><td class="device"></td><td class="data" id="td-trafficjams"></td></tr></table>';
+							$("#room-" + room.idx).append(widget);
 							updateANWB();
 							setInterval(updateANWB, 300000);
-							localStorage.setItem("room-" + room.idx, "room-anwb")
 							AddDevices(room)
 						}
 						break;
@@ -457,29 +461,31 @@ function createRooms() {
 							if (!localStorage.rssUrl) {
 								localStorage.rssUrl = 'http://www.nu.nl/rss/Algemeen';
 							}
-							roomWidget = '<div class="panel ' + panelClass + '"><div class="panel-heading" id="title-rss"><i class="fa fa-newspaper-o fa-lg" aria-hidden="true"></i></div><table class="table" id="room-rss"></table></div>';
+							roomWidget = '<div class="panel ' + panelClass + '"><div class="panel-heading" id="title-rss"><i class="fa fa-newspaper-o fa-lg" aria-hidden="true"></i></div><table class="table" id="room-' + room.idx + '"></table></div>';
 							$("#col-" + col).append(roomWidget);
 							col++;
 							if (col == 4) {
 								col = 1;
 							}
+							widget = '<tr><td colspan="2" id="tx-rss"></td></tr>';
+							$("#room-" + room.idx).append(widget);
 							updateRss();
 							setInterval(updateRss, 300000);
-							localStorage.setItem("room-" + room.idx, "room-rss")
 							AddDevices(room)
 						}
 						break;
 					case "buienradarWidget":
 						if (localStorage.buienradarWidget == 1) {
-							roomWidget = '<div class="panel ' + panelClass + '"><div id="title-buienradar" class="panel-heading"></b></div><table class="table" id="room-buienrader"></table></div>';
+							roomWidget = '<div class="panel ' + panelClass + '"><div id="title-buienradar" class="panel-heading"></b></div><table class="table" id="room-' + room.idx + '"></table></div>';
 							$("#col-" + col).append(roomWidget);
 							col++;
 							if (col == 4) {
 								col = 1;
 							}
+							widget = '<tr><td colspan="2" id="tx-buienradar"></td></tr>';
+							$("#room-" + room.idx).append(widget);
 							updateBuienradar();
 							setInterval(updateBuienradar, 600000);
-							localStorage.setItem("room-" + room.idx, "room-buienrader")
 							AddDevices(room)
 						}
 						break;
@@ -502,12 +508,14 @@ function createRooms() {
 						break;
 					case "icsWidget":
 						if (localStorage.icsWidget == 1) {
-							roomWidget = '<div class="panel ' + panelClass + '"><div class="panel-heading" id="title-ics"><i class="fa fa-calendar fa-lg" aria-hidden="true"></i></div><table class="table" id="room-ics"></table></div>';
+							roomWidget = '<div class="panel ' + panelClass + '"><div class="panel-heading" id="title-ics"><i class="fa fa-calendar fa-lg" aria-hidden="true"></i></div><table class="table" id="room-' + room.idx + '"></table></div>';
 							$("#col-" + col).append(roomWidget);
 							col++;
 							if (col == 4) {
 								col = 1;
 							}
+							widget = '<tr><td colspan="2" id="tx-ics"></td></tr>';
+							$("#room-" + room.idx).append(widget);
 							updateIcs();
 							setInterval(updateIcs, 60 * 60 * 1000);
 							localStorage.setItem("room-" + room.idx, "room-ics")
