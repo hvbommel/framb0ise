@@ -168,26 +168,26 @@ function saveSettingVar(name, val, jsoninp) {
 }
 
 function updateANWB() {
-	var widget = "";
+	var widget;
 	var url = 'https://cors.5apps.com/?uri=https://www.anwb.nl/feeds/gethf';
 	$.getJSON(url, function (data) {
 		data.roadEntries.forEach(function (road) {
-			if (road.events.trafficJams.length != 0 ) {
+			if (road.events.trafficJams.length != 0) {
 				road.events.trafficJams.forEach(function (jam) {
-					if ( typeof(jam.delay) != "undefined") {
-						widget = widget + '<tr><td>' + road.road + '(' + jam.delay/60 + 'min)</td><td>' + jam.from + ' -> ' + jam.to + '</td></tr>';
+					if (typeof (jam.delay) != "undefined") {
+						widget = widget + '<tr><td>' + road.road + '(' + jam.delay / 60 + 'min)</td><td>' + jam.from + ' -> ' + jam.to + '</td></tr>';
 					}
 				});
 			}
 		});
 		if (widget == "") {
 			widget = '<tr><td>No traffic jams</td><td></td></tr>';
-			$("#tx-traffic").empty().append(widget);
-			$(".pagination-container").remove();
+			$("#room-anwb").empty().append(widget);
+			$(".pagination-container").empty();
 		} else {
-			$("#tx-traffic").empty().append(widget);
-			$(".pagination-container").remove();
-			$("#tx-anwb").paginathing({
+			$("#room-anwb").empty().append(widget);
+			$(".pagination-container").empty();
+			$('#room-anwb').paginathing({
 				perPage: 5,
 				prevNext: true,
 				firstLast: true,
@@ -446,14 +446,15 @@ function createRooms() {
 				switch (fixedroom) {
 					case "anwbWidget":
 						if (localStorage.anwbWidget == 1) {
-							roomWidget = '<div class="panel ' + panelClass + '"><div class="panel-heading"><b><i class="fa fa-car fa-lg" aria-hidden="true"></i></b></div><table class="table" id="room-' + room.idx + '"></table></div>';
+							roomWidget = '<div class="panel ' + panelClass + '"><div class="panel-heading"><b><i class="fa fa-car fa-lg" aria-hidden="true"></i></b></div>'
+							roomWidget = roomWidget + '<table class="table" id="room-' + room.idx + '"><tr><td><table class="table" id="room-anwb"></table></div></td></tr></table></div>';
 							$("#col-" + col).append(roomWidget);
+							widget = '<tr><td class="device"></td></tr></table>';
+							$("#room-" + room.idx).append(widget);
 							col++;
 							if (col == 4) {
 								col = 1;
 							}
-							widget = '<table class="table" id="tx-anwb"><tr><td colspan="2" id="tx-traffic"></td></tr></table>';
-							$("#room-" + room.idx).append(widget);
 							updateANWB();
 							setInterval(updateANWB, 300000);
 							AddDevices(room)
@@ -857,7 +858,7 @@ function styleWidget(device) {
 			percentage = parseInt(percentage).toFixed(0);
 			$("#td-" + device.PlanID + "-" + device.idx).html('<div class="progress"><div class="progress-bar" role="progressbar" aria-valuenow="' + percentage + '" aria-valuemin="0" aria-valuemax="100" style="min-width: 3em; width:' + percentage + '%";>' + percentage + "%" + '</div></div>');
 			break;
-		case "kWh" :
+		case "kWh":
 			$('#td-' + device.PlanID + "-" + device.idx).html(device.Usage + ' (' + device.CounterToday + ')');
 			break;
 	}
