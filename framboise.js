@@ -5,6 +5,118 @@ function fullPagerefresh() {
 	location.reload();
 }
 
+function addPin(digit){
+
+	var pin = $("#pin").val();
+	pin = pin + digit;
+
+	$("#pin").attr('value', pin);
+
+
+}
+
+function disarm() {
+	var pin = $("#pin").val();
+	pin = $.md5(pin);
+	var url = localStorage.domoticzUrl + '/json.htm?type=command&param=setsecstatus&secstatus=0&seccode=' + pin;
+	$.getJSON(url, function(data) {
+		var secstatus;
+		var url = localStorage.domoticzUrl + '/json.htm?type=command&param=getsecstatus';
+		$.getJSON(url, function(data) {
+			switch (data.secstatus) {
+			case 0:
+				secstatus = 'disarmed';
+				break;
+			case 1:
+				secstatus = 'armed home';
+				break;
+			case 2:
+				secstatus = 'armed away';
+				break;
+			}
+			$("#sec-code").html('<h1>' + secstatus + '</h1>');
+			$("#pin").attr('value', '');
+		})
+	})
+}
+
+function armHome(){
+	var pin = $("#pin").val();
+	pin = $.md5(pin);
+	var url = localStorage.domoticzUrl + '/json.htm?type=command&param=setsecstatus&secstatus=1&seccode=' + pin;
+	$.getJSON(url, function(data) {
+		var secstatus;
+		var url = localStorage.domoticzUrl + '/json.htm?type=command&param=getsecstatus';
+		$.getJSON(url, function(data) {
+			switch (data.secstatus) {
+			case 0:
+				secstatus = 'disarmed';
+				break;
+			case 1:
+				secstatus = 'armed home';
+				break;
+			case 2:
+				secstatus = 'armed away';
+				break;
+			}
+			$("#sec-code").html('<h1>' + secstatus + '</h1>');
+			$("#pin").attr('value', '');
+		})
+	})
+
+
+}
+
+function armAway(){
+
+	var pin = $("#pin").val();
+	pin = $.md5(pin);
+	var url = localStorage.domoticzUrl + '/json.htm?type=command&param=setsecstatus&secstatus=2&seccode=' + pin;
+	$.getJSON(url, function(data) {
+		var secstatus;
+		var url = localStorage.domoticzUrl + '/json.htm?type=command&param=getsecstatus';
+		$.getJSON(url, function(data) {
+			switch (data.secstatus) {
+			case 0:
+				secstatus = 'disarmed';
+				break;
+			case 1:
+				secstatus = 'armed home';
+				break;
+			case 2:
+				secstatus = 'armed away';
+				break;
+			}
+			$("#sec-code").html('<h1>' + secstatus + '</h1>');
+			$("#pin").attr('value', '');
+		})
+	})
+
+
+
+
+
+}
+
+function showSecurityPanel() {
+	var secstatus;
+	var url = localStorage.domoticzUrl + '/json.htm?type=command&param=getsecstatus';
+	$.getJSON(url, function(data) {
+		switch (data.secstatus) {
+		case 0:
+			 secstatus = 'disarmed';
+			break;
+		case 1:
+			 secstatus = 'armed home';
+			break;
+		case 2:
+			 secstatus = 'armed away';
+			break;
+		}
+			$("#sec-code").html('<h1>' + secstatus + '</h1>');
+	})
+	$("#security").modal('show');
+}
 function readCams() {
 	$("#domoCams").empty();
 	var url = localStorage.domoticzUrl + '/json.htm?type=cameras';

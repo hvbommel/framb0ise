@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html>
 <head>
     <meta content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
@@ -7,7 +8,8 @@
     <link href="framb0ise.css" rel="stylesheet" type="text/css">
     <link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
     <link href="bower_components/seiyria-bootstrap-slider/dist/css/bootstrap-slider.min.css" rel="stylesheet" type="text/css">
-    <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css" type="text/css">
+
     <title>framb0ise</title>
 </head>
 
@@ -17,31 +19,35 @@
             <div class="navbar-header">
                 <a class="navbar-brand" href="https://github.com/safi78/framb0ise/issues" target="_blank"><span><img alt="Brand" src="img/logo.png" width="50" height="38"></span>framb0ise</a>
             </div>
-            <div class="nav pull-right">
-          <div class="btn-group" role="group"><a class="btn btn-sm btn-primary glyphicon glyphicon-exclamation-sign" href="https://github.com/safi78/framb0ise/issues" target="_blank" data-container="body" data-toggle="popover" data-placement="bottom" data-content="Click here to report a bug or suggest a new feature!"></a><a class="btn btn-sm btn-primary glyphicon glyphicon-heart-empty" href="https://www.paypal.me/safi78" target="_blank" data-container="body" data-toggle="popover" data-placement="bottom" data-content="If you like this project, click here to buy me a beer!"></a><button type="button" class="btn btn-sm btn-primary glyphicon glyphicon glyphicon-refresh" onclick="fullPagerefresh()" data-container="body" data-toggle="popover" data-placement="bottom" data-content="Click here to refresh the page."></button><button type="button" class="btn btn-sm btn-primary glyphicon glyphicon-cog" onclick="editSettings()" data-container="body" data-toggle="popover" data-placement="bottom" data-content="Click here to edit the settings."></button></div>
 
-        </div>
+            <div class="nav pull-right">
+                <div class="btn-group" role="group">
+                    <a class="btn btn-primary glyphicon glyphicon-exclamation-sign" href="https://github.com/safi78/framb0ise/issues" target="_blank" data-container="body" data-toggle="popover" data-placement="bottom" data-content="Click here to report a bug or suggest a new feature!"></a> <a class="btn btn-primary glyphicon glyphicon-lock" data-container="body" data-toggle="popover" data-placement="bottom" data-content="Click here for the security panel ... " onclick="showSecurityPanel()"></a><a class="btn btn-primary glyphicon glyphicon-heart-empty" href="https://www.paypal.me/safi78" target="_blank" data-container="body" data-toggle="popover" data-placement="bottom" data-content="If you like this project, click here to buy me a beer!"></a><a class="btn btn-primary glyphicon glyphicon glyphicon-refresh" onclick="fullPagerefresh()" data-container="body" data-toggle="popover" data-placement="bottom" data-content="Click here to refresh the page."></a><a class="btn btn-primary glyphicon glyphicon-cog" onclick="editSettings()" data-container="body" data-toggle="popover" data-placement="bottom" data-content="Click here to edit the settings."></a>
+                </div>
+            </div>
         </div>
     </nav>
 
     <div class="row vcenter container-fluid">
         <div class="col-md-4" id="col-1"></div>
-        <div class="col-md-4" id="col-2"></div>
-        <div class="col-md-4" id="col-3"></div>
-    </div>
- <script src="bower_components/jquery/dist/jquery.min.js"></script>
- <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
- <script src="bower_components/skycons/skycons.js"></script>
- <script src="bower_components/seiyria-bootstrap-slider/dist/bootstrap-slider.min.js"></script>
- <script src="bower_components/paginathing/paginathing.js"></script>
- <script src="bower_components/jquery-rss/dist/jquery.rss.min.js"></script>
- <script src="bower_components/JavaScript-Ical-Parser/ical_parser.js"></script>
- <script src="framboise.js"></script>
-</body>
-</html>
 
-<!-- Modal -->
-<div class="modal fade" id="settings" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="col-md-4" id="col-2"></div>
+
+        <div class="col-md-4" id="col-3"></div>
+    </div><script src="bower_components/jquery/dist/jquery.min.js" type="text/javascript">
+</script><script src="bower_components/bootstrap/dist/js/bootstrap.min.js" type="text/javascript">
+</script><script src="bower_components/skycons/skycons.js" type="text/javascript">
+</script><script src="bower_components/seiyria-bootstrap-slider/dist/bootstrap-slider.min.js" type="text/javascript">
+</script><script src="bower_components/paginathing/paginathing.js" type="text/javascript">
+</script><script src="bower_components/jquery-rss/dist/jquery.rss.min.js" type="text/javascript">
+</script><script src="bower_components/JavaScript-Ical-Parser/ical_parser.js" type="text/javascript">
+</script><script src="framboise.js" type="text/javascript"></script>
+<script src="bower_components/jQuery-MD5/jquery.md5.js" type="text/javascript"></script>
+
+
+<!-- Modal Settings -->
+
+    <div class="modal fade" id="settings" tabindex="-1" role="dialog" aria-labelledby="Settings" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -49,80 +55,127 @@
                 </div>
 
                 <div class="modal-body">
+                    <div class="radio">
+                        Import previously saved settings from domoticz. <a class="btn btn-primary glyphicon glyphicon-import" onclick="loadsettingsfromdomoticz()" data-dismiss="modal"></a>
+                    </div>
 
-					<div class="radio">
-					 Import previously saved settings from domoticz. <button type="button" class="btn btn-primary glyphicon glyphicon-import" onclick="loadsettingsfromdomoticz()" data-dismiss="modal"></button>
-					</div>
-					<div class="form-group">
-						<label for="domoticzUrl">domoticz server</label><input type="text" class="form-control" id="domoticzUrl" placeholder="e.g. http://x.x.x.x:8080 or https://user:pass@x.x.x.x">					</div>
+                    <div class="form-group">
+                        <label for="domoticzUrl">domoticz server</label><input type="text" class="form-control" id="domoticzUrl" placeholder="e.g. http://x.x.x.x:8080 or https://user:pass@x.x.x.x">
+                    </div>
 
-					<div class="form-group">
-						<label for="">Panel Color</label>
-							<select id="panelClass" class="form-control">
-								<option value="panel-default">Grey</option>
-								<option value="panel-primary">Dark Blue</option>
-								<option value="panel-success">Green</option>
-								<option value="panel-info">Light Blue</option>
-								<option value="panel-warning">Orange</option>
-								<option value="panel-danger">Red</option>
+                    <div class="form-group">
+                        <label for="">Panel Color</label> <select id="panelClass" class="form-control">
+                            <option value="panel-default">
+                                Grey
+                            </option>
 
-							</select>
-					</div>
+                            <option value="panel-primary">
+                                Dark Blue
+                            </option>
 
-					<div class="checkbox">
-						<label><input type="checkbox" id="infoWidget" value="1">Info Widget</label>
-					</div>
+                            <option value="panel-success">
+                                Green
+                            </option>
 
-					<div class="checkbox">
-						<label><input type="checkbox" id="darkskyWidget" value="1">Darksky Widget (uses settings from domoticz)</label>
-					</div>
+                            <option value="panel-info">
+                                Light Blue
+                            </option>
 
-					<div class="checkbox">
-						<label><input type="checkbox" id="buienradarWidget" value="1">Buienradar Widget</label>
-					</div>
+                            <option value="panel-warning">
+                                Orange
+                            </option>
 
-					<div class="checkbox">
-						<label><input type="checkbox" id="anwbWidget" value="1">ANWB Widget</label>
-					</div>
-					<div class="checkbox">
-						<label><input type="checkbox" id="rssWidget" value="1">RSS Widget</label>
-					</div>
+                            <option value="panel-danger">
+                                Red
+                            </option>
+                        </select>
+                    </div>
 
-					<div class="form-group">
-						<label for="rssUrl">RSS Url</label>
-					<input type="text" class="form-control" id="rssUrl" placeholder="e.g. http://www.nu.nl/rss/Algemeen"/>
+                    <div class="checkbox">
+                        <label><input type="checkbox" id="infoWidget" value="1">Info Widget</label>
+                    </div>
 
-					</div>
+                    <div class="checkbox">
+                        <label><input type="checkbox" id="darkskyWidget" value="1">Darksky Widget (uses settings from domoticz)</label>
+                    </div>
 
-					<div class="checkbox">
-						<label><input type="checkbox" id="icsWidget" value="1">ICS Widget (public accessible ics)</label>
-					</div>
-					<div class="form-group">
-						<label for="rssUrl">ICS Url (gmail calender has to be 'shared')</label>
-					<input type="text" class="form-control" id="icsUrl" placeholder="e.g. https://calendar.google.com/calendar/ical/myaccount@gmail.com/public/basic.ics"/>
-					</div>
-					<div class="form-group">
-						<label for="domoCams">Webcams</label>
-						<div id="domoCams"></div>
-					</div>
+                    <div class="checkbox">
+                        <label><input type="checkbox" id="buienradarWidget" value="1">Buienradar Widget</label>
+                    </div>
 
-				<div class="form-group">
-					<label for="settingsTitle">Settings storage location:</label>
-				<div class="radio" id="settingsTitle">
-					<label class="radio-inline">
-						<input type="radio" name="inlineRadioOptions" id="inlineRadio1" value="1">Local (this browser only).
-					</label>
-					</div>
-					<div class="radio">
-					<label class="radio-inline">
-						<input type="radio" name="inlineRadioOptions" id="inlineRadio2" value="2">Domoticz (for all devices).
-					</label>
-					</div>
-				</div>
-				</div>
-				<div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> <button type="button" class="btn btn-primary" onclick="saveSettings()">Save changes</button>
+                    <div class="checkbox">
+                        <label><input type="checkbox" id="anwbWidget" value="1">ANWB Widget</label>
+                    </div>
+
+                    <div class="checkbox">
+                        <label><input type="checkbox" id="rssWidget" value="1">RSS Widget</label>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="rssUrl">RSS Url</label> <input type="text" class="form-control" id="rssUrl" placeholder="e.g. http://www.nu.nl/rss/Algemeen">
+                    </div>
+
+                    <div class="checkbox">
+                        <label><input type="checkbox" id="icsWidget" value="1">ICS Widget (public accessible ics)</label>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="rssUrl">ICS Url (gmail calender has to be 'shared')</label> <input type="text" class="form-control" id="icsUrl" placeholder="e.g. https://calendar.google.com/calendar/ical/myaccount@gmail.com/public/basic.ics">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="domoCams">Webcams</label>
+
+                        <div id="domoCams"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="settingsTitle">Settings storage location:</label>
+
+                        <div class="radio" id="settingsTitle">
+                            <label class="radio-inline"><input type="radio" name="inlineRadioOptions" id="inlineRadio1" value="1">Local (this browser only).</label>
+                        </div>
+
+                        <div class="radio">
+                            <label class="radio-inline"><input type="radio" name="inlineRadioOptions" id="inlineRadio2" value="2">Domoticz (for all devices).</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> <button type="button" class="btn btn-primary" onclick="saveSettings()">Save</button>
+                </div>
+            </div>
+        </div>
+    </div><!-- Modal Security Panel -->
+
+    <div class="modal fade" id="security" tabindex="-1" role="dialog" aria-labelledby="Security Panel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Security Panel</h5>
+                </div>
+
+                <div class="modal-body" align="center">
+                 <div class="form-group">
+                        <div id="sec-code"></div>
+
+                    </div>
+                <table>
+	                <tr><td colspan="3"><input type="password" id="pin"></></td><td></td>
+	                <tr><td><a class="btn btn-primary btn-lg" onclick="addPin(1)">1</a></td><td><a class="btn btn-primary btn-lg"onclick="addPin(2)">2</a></td><td><a class="btn btn-primary btn-lg" onclick="addPin(3)">3</a></td><td><button type="button" class="btn btn-success btn-lg" onclick="disarm()">Disarm</button></td></tr>
+	                <tr><td><a class="btn btn-primary btn-lg" onclick="addPin(4)">4</a></td><td><a class="btn btn-primary btn-lg" onclick="addPin(5)">5</a></td><td><a class="btn btn-primary btn-lg" onclick="addPin(6)">6</a></td><td><button type="button" class="btn btn-warning btn-lg" onclick="armHome()">Arm Home</button></td></tr>
+	                <tr><td><a class="btn btn-primary btn-lg" onclick="addPin(7)">7</a></td><td><a class="btn btn-primary btn-lg" onclick="addPin(8)">8</a></td><td><a class="btn btn-primary btn-lg" onclick="addPin(9)">9</a></td><td><button type="button" class="btn btn-warning btn-lg" onclick="armAway()">Arm Away</button></td></tr>
+	                <tr><td></td><td><a class="btn btn-primary btn-lg" onclick="addPin(0)">0</a></td><td></td><td><button type="button" class="btn btn-primary btn-lg" data-dismiss="modal">Cancel</button></td></tr>
+                </table>
+
+                <div class="modal-footer">
+
+
+
                 </div>
             </div>
         </div>
     </div>
+</body>
+</html>
