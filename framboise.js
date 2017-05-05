@@ -119,15 +119,21 @@ function readCams() {
 }
 
 function editSettings() {
+	var customUrl = localStorage.getItem('customUrl');
+	$("#customUrl").val(customUrl);
+
 	var icsUrl = localStorage.getItem('icsUrl');
 	$("#icsUrl").val(icsUrl);
+
 	var domoticzUrl = localStorage.getItem('domoticzUrl');
 	if (domoticzUrl == "") {
 		var domoticzUrl = $(location).attr('protocol') + "//" + $(location).attr('host');
 	}
 	$("#domoticzUrl").val(domoticzUrl);
+
 	var rssUrl = localStorage.getItem('rssUrl');
 	$("#rssUrl").val(rssUrl);
+
 	var panelClass = localStorage.getItem('panelClass');
 	$("#panelClass").val(panelClass);
 	$('input[type=radio]').each(function() {
@@ -159,13 +165,22 @@ function saveSettings() {
 	var jsonvar2 = "";
 	var jsonvar3 = "";
 	var jsonvar4 = "";
+
 	var domoticzUrl = $("#domoticzUrl").val();
 	jsonvar = saveSettingVar('domoticzUrl', domoticzUrl, jsonvar);
 	initializeDomoticzRooms()
+
 	var icsUrl = $("#icsUrl").val();
 	jsonvar2 = saveSettingVar('icsUrl', icsUrl, jsonvar2);
+
+	var customUrl = $("#customUrl").val();
+	jsonvar2 = saveSettingVar('customUrl', customUrl, jsonvar2);
+
 	var rssUrl = $("#rssUrl").val();
 	jsonvar3 = saveSettingVar('rssUrl', rssUrl, jsonvar3);
+
+
+
 	var panelClass = $("#panelClass").val();
 	jsonvar4 = saveSettingVar('panelClass', panelClass, jsonvar4);
 	$('input[type=radio]').each(function() {
@@ -235,6 +250,7 @@ function updateCams() {
 		})
 	})
 }
+
 
 function updateRss() {
 	$("#tx-rss").empty();
@@ -309,6 +325,18 @@ function updateANWB() {
 		}
 	});
 }
+
+function updateCustom(){
+
+var customUrl=localStorage.customUrl;
+
+var html = '<tr><td><img src="' + customUrl + '" width="100%"></iframe></td></tr>';
+
+$("#room-custom").html(html);
+
+
+}
+
 
 function updateBuienradar() {
 	var widget = '<img src="https://api.buienradar.nl/image/1.0/RadarMapNL?w=256&h=256&' + new Date().getTime() + '"  width=100%>';
@@ -546,6 +574,20 @@ function createRooms() {
 					fixedroom = "cameraWidget";
 				}
 				switch (fixedroom) {
+				case "customWidget":
+				if (localStorage.customWidget == 1) {
+					roomWidget = '<div class="panel ' + panelClass + '"><div class="panel-heading" id="title-custom"><b><i class="fa fa-rss fa-lg" aria-hidden="true"></i></b></div>'
+					roomWidget = roomWidget + '<table class="table" id="room-' + room.idx + '"><tr><td><table class="table" id="room-custom"></table></td></tr></table></div></div>';
+					$("#col-" + col).append(roomWidget);
+					col++;
+					if (col == 4) {
+						col = 1;
+					}
+					updateCustom();
+					setInterval(updateCustom, 300000);
+					AddDevices(room);
+					}
+					break;
 				case "anwbWidget":
 					if (localStorage.anwbWidget == 1) {
 						roomWidget = '<div class="panel ' + panelClass + '"><div class="panel-heading" id="title-anwb"><b><i class="fa fa-car fa-lg" aria-hidden="true"></i></b></div>'
@@ -1049,6 +1091,7 @@ function initializeDomoticzRooms() {
 	domoticzAddRoom("icsWidget");
 	domoticzAddRoom("infoWidget");
 	domoticzAddRoom("rssWidget");
+	domoticzAddRoom("customWidget");
 }
 $(document).ready(function() {
 	if (!localStorage.domoticzUrl || localStorage.domoticzUrl == 'undefined') {
