@@ -1,58 +1,6 @@
 var LastUpdateTime = parseInt(0);
 var checkLoop;
 
-function updateCams() {
-	var url = localStorage.domoticzUrl + '/json.htm?type=cameras';
-	$.getJSON(url, function (data) {
-		data.result.forEach(function (cam) {
-			$.each(localStorage, function (key, value) {
-				if (~key.indexOf("cam")) {
-					if (value == cam.idx) {
-						var url = 'http://' + cam.Username + ':' + cam.Password + '@' + cam.Address + ':' + cam.Port + '/' + cam.ImageURL
-						$('#snapshot-' + cam.idx).attr('src', url).on('load', function () {
-								$("#title-" + cam.idx).text(cam.Name)
-								$('#snapshot-' + cam.idx).show();
-							})
-							.on('error', function () {
-								$("#title-" + cam.idx).text(cam.Name + " - unreachable!")
-							});
-					}
-				}
-			})
-		})
-	})
-}
-
-function updateRss() {
-	$("#tx-rss").empty();
-	var rssUrl = localStorage.getItem('rssUrl');
-	$("#tx-rss").rss(rssUrl, {
-		ssl: true,
-		limit: 5,
-		layoutTemplate: '{entries}',
-		entryTemplate: '<tr><td colspan="2">{title}</td></tr>'
-	});
-}
-
-function updateIcs() {
-	var icsUrl = 'https://crossorigin.me/' + localStorage.getItem('icsUrl');
-	new ical_parser(icsUrl, function (cal) {
-		var events = cal.getFutureEvents();
-		var counter = 0;
-		var widget = "";
-		events.forEach(function (event) {
-			if (counter < 5) {
-				var date = event.start_date;
-				date = date.replace(/\//g, "-")
-				var time = event.start_time;
-				widget = widget + '<tr><td class="device">' + date + ' ' + time + '</td><td class="data">' + event.SUMMARY + '</td></tr>'
-			}
-			counter++;
-		});
-		$("#tx-ics").html(widget);
-	});
-}
-
 function fullPagerefresh() {
 	location.reload();
 }
@@ -167,14 +115,68 @@ function saveSettingVar(name, val, jsoninp) {
 	return jsoninp + '"' + name + '":"' + val + '"'
 }
 
+function updateCams() {
+	var url = localStorage.domoticzUrl + '/json.htm?type=cameras';
+	$.getJSON(url, function (data) {
+		data.result.forEach(function (cam) {
+			$.each(localStorage, function (key, value) {
+				if (~key.indexOf("cam")) {
+					if (value == cam.idx) {
+						var url = 'http://' + cam.Username + ':' + cam.Password + '@' + cam.Address + ':' + cam.Port + '/' + cam.ImageURL
+						$('#snapshot-' + cam.idx).attr('src', url).on('load', function () {
+								$("#title-" + cam.idx).html('<b><i class="fa fa-camera fa-lg" aria-hidden="true"></i> ' + cam.Name + '</b>')
+								$('#snapshot-' + cam.idx).show();
+							})
+							.on('error', function () {
+								$("#title-" + cam.idx).html('<b><i class="fa fa-camera fa-lg" aria-hidden="true"></i> ' + cam.Name + ' - unreachable!</b>').css('color', 'orange');
+							});
+					}
+				}
+			})
+		})
+	})
+}
+
+function updateRss() {
+	$("#tx-rss").empty();
+	var rssUrl = localStorage.getItem('rssUrl');
+	$("#tx-rss").rss(rssUrl, {
+		ssl: true,
+		limit: 5,
+		layoutTemplate: '{entries}',
+		entryTemplate: '<tr><td colspan="2">{title}</td></tr>'
+	});
+}
+
+function updateIcs() {
+	var icsUrl = 'https://crossorigin.me/' + localStorage.getItem('icsUrl');
+	new ical_parser(icsUrl, function (cal) {
+		var events = cal.getFutureEvents();
+		var counter = 0;
+		var widget = "";
+		events.forEach(function (event) {
+			if (counter < 5) {
+				var date = event.start_date;
+				date = date.replace(/\//g, "-")
+				var time = event.start_time;
+				widget = widget + '<tr><td class="device">' + date + ' ' + time + '</td><td class="data">' + event.SUMMARY + '</td></tr>'
+			}
+			counter++;
+		});
+		$("#tx-ics").html(widget);
+	});
+}
+
 function updateANWB() {
-	var widget;
+	var widget = "";
+	var jams=0;
 	var url = 'https://cors.5apps.com/?uri=https://www.anwb.nl/feeds/gethf';
 	$.getJSON(url, function (data) {
 		data.roadEntries.forEach(function (road) {
 			if (road.events.trafficJams.length != 0) {
 				road.events.trafficJams.forEach(function (jam) {
 					if (typeof (jam.delay) != "undefined") {
+						++jams;
 						widget = widget + '<tr><td>' + road.road + '(' + jam.delay / 60 + 'min)</td><td>' + jam.from + ' -> ' + jam.to + '</td></tr>';
 					}
 				});
@@ -182,25 +184,29 @@ function updateANWB() {
 		});
 		if (widget == "") {
 			widget = '<tr><td>No traffic jams</td><td></td></tr>';
+			$("#title-anwb").html('<b><i class="fa fa-car fa-lg" aria-hidden="true"></i></b>').css('color', 'white');
 			$("#room-anwb").empty().append(widget);
-			$(".pagination-container").empty();
+			$(".pagination-container").remove();
 		} else {
+			$("#title-anwb").html('<b><i class="fa fa-car fa-lg" aria-hidden="true"></i> ' + jams + ' traffic jams.</b>').css('color', 'orange');
 			$("#room-anwb").empty().append(widget);
-			$(".pagination-container").empty();
-			$('#room-anwb').paginathing({
-				perPage: 5,
-				prevNext: true,
-				firstLast: true,
-				prevText: '&laquo;',
-				nextText: '&raquo;',
-				firstText: 'First',
-				lastText: 'Last',
-				containerClass: 'pagination-container',
-				ulClass: 'pagination',
-				liClass: 'page',
-				activeClass: 'active',
-				disabledClass: 'disable'
-			});
+			$(".pagination-container").remove();
+			if ( jams > 5 ) {
+				$('#room-anwb').paginathing({
+					perPage: 5,
+					prevNext: true,
+					firstLast: true,
+					prevText: '&laquo;',
+					nextText: '&raquo;',
+					firstText: 'First',
+					lastText: 'Last',
+					containerClass: 'pagination-container',
+					ulClass: 'pagination',
+					liClass: 'page',
+					activeClass: 'active',
+					disabledClass: 'disable'
+				});
+			}
 		}
 	});
 }
@@ -223,9 +229,9 @@ function updateBuienradar() {
 				}
 			})
 			if (rainArray.length > 0) {
-				$("#title-buienradar").html('<b><i class="fa fa-umbrella fa-lg" aria-hidden="true"></i> rain from ' + rainArray[0] + ' to ' + rainArray[rainArray.length - 1]).css('color', 'orange');
+				$("#title-buienradar").html('<b><i class="fa fa-umbrella fa-lg" aria-hidden="true"></i> Rain from ' + rainArray[0] + ' to ' + rainArray[rainArray.length - 1] + '</b>').css('color', 'orange');
 			} else {
-				$("#title-buienradar").html('<b><i class="fa fa-umbrella fa-lg" aria-hidden="true"></i>');
+				$("#title-buienradar").html('<b><i class="fa fa-umbrella fa-lg" aria-hidden="true"></i></b>');
 			}
 		});
 	})
@@ -446,11 +452,9 @@ function createRooms() {
 				switch (fixedroom) {
 					case "anwbWidget":
 						if (localStorage.anwbWidget == 1) {
-							roomWidget = '<div class="panel ' + panelClass + '"><div class="panel-heading"><b><i class="fa fa-car fa-lg" aria-hidden="true"></i></b></div>'
-							roomWidget = roomWidget + '<table class="table" id="room-' + room.idx + '"><tr><td><table class="table" id="room-anwb"></table></div></td></tr></table></div>';
+							roomWidget = '<div class="panel ' + panelClass + '"><div class="panel-heading" id="title-anwb"><b><i class="fa fa-car fa-lg" aria-hidden="true"></i></b></div>'
+							roomWidget = roomWidget + '<table class="table" id="room-' + room.idx + '"><tr><td><table class="table" id="room-anwb"></table></td></tr></table></div></div>';
 							$("#col-" + col).append(roomWidget);
-							widget = '<tr><td class="device"></td></tr></table>';
-							$("#room-" + room.idx).append(widget);
 							col++;
 							if (col == 4) {
 								col = 1;
@@ -538,7 +542,7 @@ function createRooms() {
 							var url = localStorage.domoticzUrl + '/json.htm?type=cameras';
 							$.getJSON(url, function (data) {
 								data.result.forEach(function (cam) {
-									$("#title-" + cam.idx).text(cam.Name)
+									$("#title-" + cam.idx).html('<b><i class="fa fa-camera fa-lg" aria-hidden="true"></i> ' + cam.Name + '</b>')
 								})
 							})
 							updateCams();
@@ -567,7 +571,7 @@ function createRooms() {
 				}
 			}
 			if (room.Name.substring(0, 1) != "$") {
-				roomWidget = '<div class="panel panel ' + panelClass + '"><div class="panel-heading"><b>' + room.Name + '</b></div><table class="table" id="room-' + room.idx + '"></table></div>';
+				roomWidget = '<div class="panel panel ' + panelClass + '"><div class="panel-heading"><i class="fa fa-institution  fa-lg" aria-hidden="true"></i><b> ' + room.Name + '</b></div><table class="table" id="room-' + room.idx + '"></table></div>';
 				$("#col-" + col).append(roomWidget);
 				col++;
 				if (col == 4) {
