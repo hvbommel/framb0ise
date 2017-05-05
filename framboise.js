@@ -484,7 +484,7 @@ function createRooms() {
 						break;
 					case "buienradarWidget":
 						if (localStorage.buienradarWidget == 1) {
-							roomWidget = '<div class="panel ' + panelClass + '"><div id="title-buienradar" class="panel-heading"></b></div><table class="table" id="room-' + room.idx + '"></table></div>';
+							roomWidget = '<div class="panel ' + panelClass + '"><div id="title-buienradar" class="panel-heading"><b><i class="fa fa-umbrella fa-lg" aria-hidden="true"></i></b></div><table class="table" id="room-' + room.idx + '"></table></div>';
 							$("#col-" + col).append(roomWidget);
 							col++;
 							if (col == 4) {
