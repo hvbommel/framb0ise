@@ -352,7 +352,7 @@ function updateDarkSky() {
 				weatherReport += '<tr><small><td>' + weekday + '</td><td>' + temperatureMin + '&deg;c - ' + temperatureMax + '&deg;c</td></small></tr>';
 			})
 			weatherReport += '</table>';
-			$("#title-darksky").html('<b><i class="fa fa-thermometer-half fa-lg" aria-hidden="true"></i> ' + temperature + ' &deg;c</b>').attr('data-container', 'body').attr('data-placement', 'right').attr('data-content', weatherReport).attr('data-toggle', 'popover').attr('data-html', 'true');
+			$("#title-darksky").html('<b><i class="fa fa-thermometer-half fa-lg" aria-hidden="true"></i> ' + temperature + ' &deg;c</b>').attr('data-container', 'body').attr('data-placement', 'auto').attr('data-content', weatherReport).attr('data-toggle', 'popover').attr('data-html', 'true');
 			$('[data-toggle="popover"]').popover({
 				trigger: "hover"
 			});
