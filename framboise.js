@@ -285,7 +285,7 @@ function updateIcs() {
 function updateANWB() {
 	var widget = "";
 	var jams = 0;
-	var url = 'https://cors.5apps.com/?uri=https://www.anwb.nl/feeds/gethf';
+	var url = 'https://www.anwb.nl/feeds/gethf';
 	$.getJSON(url, function(data) {
 		data.roadEntries.forEach(function(road) {
 			if (road.events.trafficJams.length != 0) {
@@ -417,7 +417,7 @@ function readHardware() {
 }
 
 function updateDarkSky() {
-	url = 'https://cors.5apps.com/?uri=https://api.darksky.net/forecast/' + localStorage.DarkSkyUsername + '/' + localStorage.DarkSkyPassword + '?units=ca';
+	url = 'https://crossorigin.me/https://api.darksky.net/forecast/' + localStorage.DarkSkyUsername + '/' + localStorage.DarkSkyPassword + '?units=ca';
 	$.get(url, function(data) {
 		if (data.currently) {
 			var skycons = new Skycons({
