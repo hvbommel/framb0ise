@@ -12,61 +12,27 @@ function addPin(digit) {
 }
 
 function disarm() {
-	var pin = $("#pin").val();
-	pin = $.md5(pin);
-	var url = localStorage.domoticzUrl + '/json.htm?type=command&param=setsecstatus&secstatus=0&seccode=' + pin;
-	$.getJSON(url, function(data) {
-		var secstatus;
-		var url = localStorage.domoticzUrl + '/json.htm?type=command&param=getsecstatus';
-		$.getJSON(url, function(data) {
-			switch (data.secstatus) {
-			case 0:
-				secstatus = 'disarmed';
-				break;
-			case 1:
-				secstatus = 'armed home';
-				break;
-			case 2:
-				secstatus = 'armed away';
-				break;
-			}
-			$("#sec-code").html('<h1>' + secstatus + '</h1>');
-			$("#pin").attr('value', '');
-		})
-	})
+	setsecpanel(0)
 }
 
 function armHome() {
-	var pin = $("#pin").val();
-	pin = $.md5(pin);
-	var url = localStorage.domoticzUrl + '/json.htm?type=command&param=setsecstatus&secstatus=1&seccode=' + pin;
-	$.getJSON(url, function(data) {
-		var secstatus;
-		var url = localStorage.domoticzUrl + '/json.htm?type=command&param=getsecstatus';
-		$.getJSON(url, function(data) {
-			switch (data.secstatus) {
-			case 0:
-				secstatus = 'disarmed';
-				break;
-			case 1:
-				secstatus = 'armed home';
-				break;
-			case 2:
-				secstatus = 'armed away';
-				break;
+	setsecpanel(1)
 			}
-			$("#sec-code").html('<h1>' + secstatus + '</h1>');
-			$("#pin").attr('value', '');
-		})
-	})
-}
 
 function armAway() {
+	setsecpanel(2)
+}
+
+function setsecpanel(level) {
 	var pin = $("#pin").val();
 	pin = $.md5(pin);
-	var url = localStorage.domoticzUrl + '/json.htm?type=command&param=setsecstatus&secstatus=2&seccode=' + pin;
+	var url = localStorage.domoticzUrl + '/json.htm?type=command&param=setsecstatus&secstatus=' + level + '&seccode=' + pin;
 	$.getJSON(url, function(data) {
 		var secstatus;
+		var status="";
+		if (data.status != "OK" ) {
+			status = "-" + data.message;
+		}
 		var url = localStorage.domoticzUrl + '/json.htm?type=command&param=getsecstatus';
 		$.getJSON(url, function(data) {
 			switch (data.secstatus) {
@@ -80,6 +46,7 @@ function armAway() {
 				secstatus = 'armed away';
 				break;
 			}
+			secstatus = secstatus + status
 			$("#sec-code").html('<h1>' + secstatus + '</h1>');
 			$("#pin").attr('value', '');
 		})
