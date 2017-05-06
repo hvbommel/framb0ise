@@ -607,28 +607,11 @@ function createRooms() {
 						if (!localStorage.rssUrl) {
 							localStorage.rssUrl = 'http://www.nu.nl/rss/Algemeen';
 						}
-<<<<<<< HEAD
-						break;
-					case "buienradarWidget":
-						if (localStorage.buienradarWidget == 1) {
-							roomWidget = '<div class="panel ' + panelClass + '"><div id="title-buienradar" class="panel-heading"><b><i class="fa fa-umbrella fa-lg" aria-hidden="true"></i></b></div><table class="table" id="room-' + room.idx + '"></table></div>';
-							$("#col-" + col).append(roomWidget);
-							col++;
-							if (col == 4) {
-								col = 1;
-							}
-							widget = '<tr><td colspan="2" id="tx-buienradar"></td></tr>';
-							$("#room-" + room.idx).append(widget);
-							updateBuienradar();
-							setInterval(updateBuienradar, 600000);
-							AddDevices(room)
-=======
 						roomWidget = '<div class="panel ' + panelClass + '"><div class="panel-heading" id="title-rss"><i class="fa fa-newspaper-o fa-lg" aria-hidden="true"></i></div><table class="table" id="room-' + room.idx + '"></table></div>';
 						$("#col-" + col).append(roomWidget);
 						col++;
 						if (col == 4) {
 							col = 1;
->>>>>>> development
 						}
 						widget = '<tr><td colspan="2" id="tx-rss"></td></tr>';
 						$("#room-" + room.idx).append(widget);
