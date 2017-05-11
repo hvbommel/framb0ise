@@ -107,7 +107,7 @@ function editSettings() {
 		for (var i = 0, len = localStorage.length; i < len; i++) {
 			var key = localStorage.key(i);
 			var value = localStorage[key];
-			if (key == "inlineRadio1" || key == "inlineRadio2" || key == "inlineRadio3") {
+			if (key == "inlineRadio1" || key == "inlineRadio2") {
 				$('#' + key).attr("checked", "checked");
 			}
 		}
@@ -969,9 +969,9 @@ function styleWidget(device) {
 }
 
 function loadsettingsfromdomoticz() {
+	var defhost = $("#domoticzUrl").val();;
+	var url = defhost + '/json.htm?type=command&param=getuservariables';
 	localStorage.clear();
-	localStorage.domoticzUrl = $(location).attr('protocol') + "//" + $(location).attr('host');
-	var url = localStorage.domoticzUrl + '/json.htm?type=command&param=getuservariables';
 	var found = 0;
 	var found1 = 0;
 	var found2 = 0;
@@ -980,7 +980,7 @@ function loadsettingsfromdomoticz() {
 	$.getJSON(url, function(data) {
 		data.result.forEach(function(uservar) {
 			if (uservar.Name.substring(0, 9) == "framb0ise") {
-				var url = localStorage.domoticzUrl + '/json.htm?type=command&param=getuservariable&idx=' + uservar.idx;
+				var url = defhost + '/json.htm?type=command&param=getuservariable&idx=' + uservar.idx;
 				switch (uservar.Name) {
 				case "framb0ise":
 					found = 1;
@@ -1013,19 +1013,19 @@ function loadsettingsfromdomoticz() {
 			}
 		});
 		if (found == 0) {
-			var url = localStorage.domoticzUrl + '/json.htm?type=command&param=saveuservariable&vname=framb0ise&vtype=2&vvalue={"domoticzUrl":"' + $(location).attr('protocol') + "//" + $(location).attr('host') + '"}';
+			var url = defhost + '/json.htm?type=command&param=saveuservariable&vname=framb0ise&vtype=2&vvalue={"domoticzUrl":"' + $(location).attr('protocol') + "//" + $(location).attr('host') + '"}';
 			$.getJSON(url, function(data) {});
 		}
 		if (found2 == 0) {
-			var url = localStorage.domoticzUrl + '/json.htm?type=command&param=saveuservariable&vname=framb0ise2&vtype=2&vvalue={""}';
+			var url = defhost + '/json.htm?type=command&param=saveuservariable&vname=framb0ise2&vtype=2&vvalue={""}';
 			$.getJSON(url, function(data) {});
 		}
 		if (found3 == 0) {
-			var url = localStorage.domoticzUrl + '/json.htm?type=command&param=saveuservariable&vname=framb0ise3&vtype=2&vvalue={""}';
+			var url = defhost + '/json.htm?type=command&param=saveuservariable&vname=framb0ise3&vtype=2&vvalue={""}';
 			$.getJSON(url, function(data) {});
 		}
 		if (found4 == 0) {
-			var url = localStorage.domoticzUrl + '/json.htm?type=command&param=saveuservariable&vname=framb0ise4&vtype=2&vvalue={""}';
+			var url = defhost + '/json.htm?type=command&param=saveuservariable&vname=framb0ise4&vtype=2&vvalue={""}';
 			$.getJSON(url, function(data) {});
 		}
 	});
