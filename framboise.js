@@ -70,8 +70,9 @@ function showSecurityPanel() {
 		}
 		$("#sec-code").html('<h1>' + secstatus + '</h1>');
 	})
-	$("#security").modal('show');
-}
+	$('#security').modal('show').on('shown.bs.modal', function () {
+		$('#pin').focus();
+	})}
 
 function readCams() {
 	$("#domoCams").empty();
@@ -206,7 +207,7 @@ function updateCams() {
 					if (value == cam.idx) {
 						var url = 'http://' + cam.Username + ':' + cam.Password + '@' + cam.Address + ':' + cam.Port + '/' + cam.ImageURL
 						$('#snapshot-' + cam.idx).attr('src', url).on('load', function() {
-							$("#title-" + cam.idx).html('<b><i class="fa fa-camera fa-lg" aria-hidden="true"></i> ' + cam.Name + '</b>')
+							$("#title-" + cam.idx).html('<b><i class="fa fa-camera fa-lg" aria-hidden="true"></i> ' + cam.Name + '</b>').css('color', 'white');
 							$('#snapshot-' + cam.idx).show();
 						}).on('error', function() {
 							$("#title-" + cam.idx).html('<b><i class="fa fa-camera fa-lg" aria-hidden="true"></i> ' + cam.Name + ' - unreachable!</b>').css('color', 'orange');
@@ -324,7 +325,7 @@ function updateBuienradar() {
 			if (rainArray.length > 0) {
 				$("#title-buienradar").html('<b><i class="fa fa-umbrella fa-lg" aria-hidden="true"></i> Rain from ' + rainArray[0] + ' to ' + rainArray[rainArray.length - 1] + '</b>').css('color', 'orange');
 			} else {
-				$("#title-buienradar").html('<b><i class="fa fa-umbrella fa-lg" aria-hidden="true"></i></b>');
+				$("#title-buienradar").html('<b><i class="fa fa-umbrella fa-lg" aria-hidden="true"></i></b>').css('color', 'white');;
 			}
 		});
 	})
