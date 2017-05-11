@@ -70,8 +70,9 @@ function showSecurityPanel() {
 		}
 		$("#sec-code").html('<h1>' + secstatus + '</h1>');
 	})
-	$("#security").modal('show');
-}
+	$('#security').modal('show').on('shown.bs.modal', function () {
+		$('#pin').focus();
+	})}
 
 function readCams() {
 	$("#domoCams").empty();
