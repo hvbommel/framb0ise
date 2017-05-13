@@ -70,8 +70,9 @@ function showSecurityPanel() {
 		}
 		$("#sec-code").html('<h1>' + secstatus + '</h1>');
 	})
-	$("#security").modal('show');
-}
+	$('#security').modal('show').on('shown.bs.modal', function () {
+		$('#pin').focus();
+	})}
 
 function readCams() {
 	$("#domoCams").empty();
@@ -107,7 +108,7 @@ function editSettings() {
 		for (var i = 0, len = localStorage.length; i < len; i++) {
 			var key = localStorage.key(i);
 			var value = localStorage[key];
-			if (key == "inlineRadio1" || key == "inlineRadio2" || key == "inlineRadio3") {
+			if (key == "inlineRadio1" || key == "inlineRadio2") {
 				$('#' + key).attr("checked", "checked");
 			}
 		}
@@ -206,7 +207,7 @@ function updateCams() {
 					if (value == cam.idx) {
 						var url = 'http://' + cam.Username + ':' + cam.Password + '@' + cam.Address + ':' + cam.Port + '/' + cam.ImageURL
 						$('#snapshot-' + cam.idx).attr('src', url).on('load', function() {
-							$("#title-" + cam.idx).html('<b><i class="fa fa-camera fa-lg" aria-hidden="true"></i> ' + cam.Name + '</b>')
+							$("#title-" + cam.idx).html('<b><i class="fa fa-camera fa-lg" aria-hidden="true"></i> ' + cam.Name + '</b>').css('color', 'white');
 							$('#snapshot-' + cam.idx).show();
 						}).on('error', function() {
 							$("#title-" + cam.idx).html('<b><i class="fa fa-camera fa-lg" aria-hidden="true"></i> ' + cam.Name + ' - unreachable!</b>').css('color', 'orange');
@@ -324,7 +325,7 @@ function updateBuienradar() {
 			if (rainArray.length > 0) {
 				$("#title-buienradar").html('<b><i class="fa fa-umbrella fa-lg" aria-hidden="true"></i> Rain from ' + rainArray[0] + ' to ' + rainArray[rainArray.length - 1] + '</b>').css('color', 'orange');
 			} else {
-				$("#title-buienradar").html('<b><i class="fa fa-umbrella fa-lg" aria-hidden="true"></i></b>');
+				$("#title-buienradar").html('<b><i class="fa fa-umbrella fa-lg" aria-hidden="true"></i></b>').css('color', 'white');;
 			}
 		});
 	})
@@ -969,9 +970,9 @@ function styleWidget(device) {
 }
 
 function loadsettingsfromdomoticz() {
+	var defhost = $("#domoticzUrl").val();;
+	var url = defhost + '/json.htm?type=command&param=getuservariables';
 	localStorage.clear();
-	localStorage.domoticzUrl = $(location).attr('protocol') + "//" + $(location).attr('host');
-	var url = localStorage.domoticzUrl + '/json.htm?type=command&param=getuservariables';
 	var found = 0;
 	var found1 = 0;
 	var found2 = 0;
@@ -980,7 +981,7 @@ function loadsettingsfromdomoticz() {
 	$.getJSON(url, function(data) {
 		data.result.forEach(function(uservar) {
 			if (uservar.Name.substring(0, 9) == "framb0ise") {
-				var url = localStorage.domoticzUrl + '/json.htm?type=command&param=getuservariable&idx=' + uservar.idx;
+				var url = defhost + '/json.htm?type=command&param=getuservariable&idx=' + uservar.idx;
 				switch (uservar.Name) {
 				case "framb0ise":
 					found = 1;
@@ -1013,19 +1014,19 @@ function loadsettingsfromdomoticz() {
 			}
 		});
 		if (found == 0) {
-			var url = localStorage.domoticzUrl + '/json.htm?type=command&param=saveuservariable&vname=framb0ise&vtype=2&vvalue={"domoticzUrl":"' + $(location).attr('protocol') + "//" + $(location).attr('host') + '"}';
+			var url = defhost + '/json.htm?type=command&param=saveuservariable&vname=framb0ise&vtype=2&vvalue={"domoticzUrl":"' + $(location).attr('protocol') + "//" + $(location).attr('host') + '"}';
 			$.getJSON(url, function(data) {});
 		}
 		if (found2 == 0) {
-			var url = localStorage.domoticzUrl + '/json.htm?type=command&param=saveuservariable&vname=framb0ise2&vtype=2&vvalue={""}';
+			var url = defhost + '/json.htm?type=command&param=saveuservariable&vname=framb0ise2&vtype=2&vvalue={""}';
 			$.getJSON(url, function(data) {});
 		}
 		if (found3 == 0) {
-			var url = localStorage.domoticzUrl + '/json.htm?type=command&param=saveuservariable&vname=framb0ise3&vtype=2&vvalue={""}';
+			var url = defhost + '/json.htm?type=command&param=saveuservariable&vname=framb0ise3&vtype=2&vvalue={""}';
 			$.getJSON(url, function(data) {});
 		}
 		if (found4 == 0) {
-			var url = localStorage.domoticzUrl + '/json.htm?type=command&param=saveuservariable&vname=framb0ise4&vtype=2&vvalue={""}';
+			var url = defhost + '/json.htm?type=command&param=saveuservariable&vname=framb0ise4&vtype=2&vvalue={""}';
 			$.getJSON(url, function(data) {});
 		}
 	});
